@@ -1,0 +1,78 @@
+/* 🌐 Global reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* 🧱 Body styling */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #e3f2fd, #ffffff);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 🏠 Home container */
+.home-container {
+  background-color: #ffffff;
+  padding: 3rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  transition: all 0.3s ease-in-out;
+}
+
+/* 🖋️ Home title */
+.home-title {
+  font-size: 28px;
+  margin-bottom: 2rem;
+  color: #1e88e5;
+  font-weight: 600;
+}
+
+/* 📦 Button group */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* 🔘 Buttons */
+.home-btn {
+  padding: 0.85rem 1.5rem;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 12px;
+  background-color: #1e88e5;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.home-btn:hover {
+  background-color: #1565c0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(21, 101, 192, 0.25);
+}
+
+/* ✅ Responsive design */
+@media (max-width: 480px) {
+  .home-container {
+    padding: 2rem 1rem;
+  }
+
+  .home-title {
+    font-size: 24px;
+  }
+
+  .home-btn {
+    font-size: 14px;
+    padding: 0.7rem 1.2rem;
+  }
+}

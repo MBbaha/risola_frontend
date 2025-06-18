@@ -1,0 +1,84 @@
+.hisobot-container {
+  background: linear-gradient(to right, #f0f9ff, #e0f2fe);
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.report-title {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #1e3a8a;
+}
+
+.radio-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.radio-group label {
+  font-size: 1rem;
+  color: #1e293b;
+}
+
+.summary-text {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #047857;
+  margin-bottom: 1.5rem;
+}
+
+.pie-wrapper {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pie-chart-box {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  width: 450px;
+}
+
+.pie-chart-box h3 {
+  text-align: center;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.download-btn, .back-btn {
+  background-color: #2563eb;
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.download-btn:hover, .back-btn:hover {
+  background-color: #1d4ed8;
+}
+.baho-summary {
+  margin-top: 1rem;
+  font-weight: 500;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.baho-summary p {
+  margin: 4px 0;
+}

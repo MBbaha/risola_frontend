@@ -1,0 +1,370 @@
+/* Umumiy tartib */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9fbff;
+}
+
+/* Layout */
+.mijozlar-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #fdfdfd;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+ position: fixed;
+  top: 0;
+  left: -280px;
+  width: 260px;
+  height: 100%;
+  background-color: #f9f9f9;
+  padding: 20px;
+  box-shadow: 3px 0 6px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  transition: left 0.3s ease;
+  z-index: 1000;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar h2 {
+  font-size: 18px;
+  margin-bottom: 14px;
+  color: #2c3e50;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 6px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  margin: 8px 0;
+  font-size: 15px;
+  color: #34495e;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  border-bottom: 1px dashed #bbb;
+}
+
+.sidebar li:hover {
+  background-color: #e3f2fd;
+  transform: translateX(4px);
+  color: #1565c0;
+  font-weight: 500;
+}
+
+/* Sidebar toggle button */
+.sidebar-toggle {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 50px;
+  height: 50px;
+  z-index: 1001;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+    background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);}
+
+/* Asosiy kontent */
+.mijozlar-royxati {
+  flex-grow: 1;
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+/* Sarlavha */
+.mijozlar-royxati h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 28px;
+  color: #2c3e50;
+}
+
+/* Top controls */
+.top-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 1rem;
+}
+
+.jami-son,
+.jami-summa {
+  font-size: 16px;
+  font-weight: 500;
+  color: #555;
+}
+
+.search-input {
+  padding: 0.65rem 1rem;
+  border: 1.5px solid #ccc;
+  border-radius: 12px;
+  font-size: 15px;
+  width: 250px;
+  outline: none;
+  transition: border 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #1e88e5;
+  box-shadow: 0 0 6px rgba(30, 136, 229, 0.2);
+}
+
+/* Oy filtri bar */
+.month-filter-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  background-color: #f8f9fa;
+  padding: 10px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  border-bottom: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.month-filter-bar button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.month-filter-bar button:hover {
+  background-color: #0056b3;
+}
+
+/* Lokatsiyalar */
+.location-stats-horizontal {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(135deg, #f9f9f9, #e8f0ff);
+  padding: 20px;
+  border-bottom: 2px solid #dfe6e9;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.location-stats-horizontal h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.location-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.location-item {
+  background: white;
+  padding: 12px 20px;
+  border-radius: 14px;
+  min-width: 160px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 500;
+  color: #34495e;
+  border: 1px solid #dce1e7;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.location-item:hover {
+  transform: translateY(-4px);
+  background-color: #f0f8ff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Jadval */
+.mijoz-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 15px;
+}
+
+.mijoz-table th,
+.mijoz-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.mijoz-table th {
+  background-color: #f7f7f7;
+  color: #333;
+}
+
+.mijoz-table tr:hover {
+  background-color: #f0f8ff;
+}
+
+.mijoz-table input[type="text"],
+.mijoz-table input[type="date"] {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 14px;
+}
+
+/* Tugmalar */
+button {
+  padding: 0.5rem 0.9rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.edit-btn {
+  background-color: #42a5f5;
+  color: white;
+  margin-right: 6px;
+}
+
+.edit-btn:hover {
+  background-color: #1e88e5;
+}
+
+.del-btn {
+  background-color: #ef5350;
+  color: white;
+}
+
+.del-btn:hover {
+  background-color: #d32f2f;
+}
+
+.save-btn {
+  background-color: #43a047;
+  color: white;
+  margin-right: 6px;
+}
+
+.save-btn:hover {
+  background-color: #388e3c;
+}
+
+.cancel-btn {
+  background-color: #bdbdbd;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #757575;
+}
+
+.back-button {
+  margin: 2rem auto 0;
+  background-color: #1e88e5;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 10px;
+  font-size: 16px;
+  display: block;
+  transition: 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #1565c0;
+  transform: translateY(-2px);
+}
+
+/* Qidiruv xabari */
+.search-message {
+  margin-bottom: 10px;
+  font-style: italic;
+  color: #555;
+}
+
+/* Responsive dizayn */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .sidebar-toggle {
+    display: block;
+    padding: 8px 10px;
+    font-size: 18px;
+  }
+
+  .mijozlar-royxati {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .top-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .mijoz-table th,
+  .mijoz-table td {
+    font-size: 13px;
+    padding: 0.5rem;
+  }
+
+  .back-button {
+    font-size: 15px;
+  }
+
+  button {
+    font-size: 13px;
+  }
+}
