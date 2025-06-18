@@ -69,7 +69,7 @@ export default function ChekRoyxati() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/userKvitansiya/getUsers');
+        const res = await axios.get('http://risola-backend.onrender.com/userKvitansiya/getUsers');
         if (res.data.success) {
           const enrichedData = res.data.data.map(item => ({
             ...item,
@@ -102,7 +102,7 @@ export default function ChekRoyxati() {
     }
 
     try {
-      await axios.delete(`http://localhost:5000/userKvitansiya/delete/${deleteId}`);
+      await axios.delete(`http://risola-backend.onrender.com/userKvitansiya/delete/${deleteId}`);
       setCheklar(prev => prev.filter(item => item._id !== deleteId));
       alert("✅ Kvitansiya muvaffaqiyatli o‘chirildi.");
     } catch (err) {
