@@ -37,7 +37,7 @@ function MijozlarRoyxati() {
   };
 
   useEffect(() => {
-    axios.get("http://localhost:5000/users/getUsers")
+    axios.get("http://risola-backend.onrender.com/users/getUsers")
       .then(res => {
         const allUsers = res.data.data;
         let filtered = allUsers;
@@ -104,7 +104,7 @@ function MijozlarRoyxati() {
       return;
     }
 
-    axios.put(`http://localhost:5000/users/updateUsersById/${editingUserId}`, formData)
+    axios.put(`http://risola-backend.onrender.com/users/updateUsersById/${editingUserId}`, formData)
       .then(res => {
         const updatedUsers = users.map(user =>
           user._id === editingUserId ? res.data.data : user
@@ -134,7 +134,7 @@ function MijozlarRoyxati() {
 
   const handleDel = (user) => {
     if (window.confirm("❗ Bu mijozni o‘chirishga ishonchingiz komilmi?")) {
-      axios.delete(`http://localhost:5000/users/delete/${user._id}`)
+      axios.delete(`http://risola-backend.onrender.com/users/delete/${user._id}`)
         .then(() => {
           const updatedUsers = users.filter(u => u._id !== user._id);
           setUsers(updatedUsers);
