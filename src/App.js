@@ -42,7 +42,7 @@ function App() {
         <Route path="/kvitansiya" element={<Kvitansiya />} />
         <Route path="/hisobot" element={<HisobotDashboard />} />
         <Route path="/chekRoyxati" element={<ChekRoyxati />} />
-         
+           <Route path="*" element={<Home />} /> 
       </Routes>
     </Router>
   );
