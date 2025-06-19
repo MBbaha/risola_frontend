@@ -57,7 +57,7 @@ function YangiMijoz() {
     }
 
     try {
-      const res = await axios.post("https://risola-backend.onrender.com/users/register", {
+      const res = await axios.post("https://backend-rislola.onrender.com/users/register", {
         firstname: ism,
         lastname: fam,
         location: location,
