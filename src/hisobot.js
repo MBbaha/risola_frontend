@@ -19,7 +19,7 @@ const HisobotDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('https://backend-rislola.onrender.com/users/getUsers')
+    axios.get('https://backend-rislola.onrender.com/api/getUsers')
       .then(res => setUsers(res.data.data))
       .catch(err => console.error("Xatolik:", err));
   }, []);
