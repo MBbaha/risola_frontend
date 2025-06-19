@@ -1,15 +1,4 @@
-# .render.yaml
-services:
-  - type: web
-    name: risola-frontend2
-    env: static
-    buildCommand: npm run build
-    staticPublishPath: build
-    headers:
-      - path: /*
-        name: Access-Control-Allow-Origin
-        value: "*"
-    routes:
-      - type: rewrite
-        source: "/*"
-        destination: "/index.html"
+redirects:
+  - source: "/*"
+    destination: "/index.html"
+    statusCode: 200
