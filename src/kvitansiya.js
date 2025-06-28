@@ -114,7 +114,8 @@ function Kvitansiya() {
         <div className="firstDiv">
           <h1>{formattedDate}</h1>
           <h1>Naqd pul haqida Kvitansiya</h1>
-         <h1 className='inputCircle'>№ {tartibraqam}</h1>
+         <h1 className='inputCircle'>№ {form.tartibraqam}</h1>
+
 
         </div>
 
