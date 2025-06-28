@@ -114,7 +114,8 @@ function Kvitansiya() {
         <div className="firstDiv">
           <h1>{formattedDate}</h1>
           <h1>Naqd pul haqida Kvitansiya</h1>
-          <h1>№<input name="tartibraqam" value={form.tartibraqam} onChange={handleChange} required /></h1>
+         <h1 className='inputCircle'>№ {tartibraqam}</h1>
+
         </div>
 
         <div className="secondDiv">
