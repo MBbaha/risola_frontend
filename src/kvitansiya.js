@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
@@ -33,6 +33,28 @@ function Kvitansiya() {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPrintButton, setShowPrintButton] = useState(false);
+
+  // 🔄 Tartib raqamini avtomatik yuklash (oxirgi raqamga qarab +1)
+  useEffect(() => {
+    const fetchLastNumber = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/userKvitansiya/getAll'); // backendga moslang
+        const data = res.data;
+
+        let nextNumber = '1001';
+        if (Array.isArray(data) && data.length > 0) {
+          const last = data[data.length - 1];
+          const lastNum = parseInt(last.tartibraqam || '1000', 10);
+          nextNumber = (lastNum + 1).toString();
+        }
+        setForm(prev => ({ ...prev, tartibraqam: nextNumber }));
+      } catch (err) {
+        console.error("Tartib raqam olishda xatolik:", err.message);
+        setForm(prev => ({ ...prev, tartibraqam: '1001' })); // fallback
+      }
+    };
+    fetchLastNumber();
+  }, []);
 
   const formatNumber = val => {
     const cleaned = val.replace(/\D/g, '');
@@ -79,7 +101,7 @@ function Kvitansiya() {
     if (loading) return;
     setLoading(true);
     try {
-      const res = await axios.post('https://risola-backend.onrender.com/userKvitansiya/register', {
+      const res = await axios.post('http://localhost:5000/userKvitansiya/register', {
         ...form,
         summa: form.summa.replace(/\s/g, ''),
         qoshimchatolov: form.qoshimchatolov.replace(/\s/g, '')
@@ -114,7 +136,7 @@ function Kvitansiya() {
         <div className="firstDiv">
           <h1>{formattedDate}</h1>
           <h1>Naqd pul haqida Kvitansiya</h1>
-          <h1>№<input name="tartibraqam" value={form.tartibraqam} onChange={handleChange} required /></h1>
+          <h1>№ {form.tartibraqam}</h1>
         </div>
 
         <div className="secondDiv">
