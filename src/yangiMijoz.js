@@ -34,8 +34,8 @@ function YangiMijoz() {
       fam: !fam,
       ism: !ism,
       location: !location,
-      sana: !sana ,
-      tel: tel.length !== 9,
+      sana: !sana || inputDate > today,
+      tel: tel.length !== 13 || !tel.startsWith('+998'),
       summa: !summa,
       baho: !baho,
     };
@@ -43,9 +43,9 @@ function YangiMijoz() {
     setErrors(validationErrors);
 
     if (Object.values(validationErrors).some(Boolean)) {
-      if (!sana ) {
+      if (!sana || inputDate > today) {
         setErrorMsg("❌ Sana xato! Kelajak sanani kiritmang.");
-      } else if (tel.length !== 9 ) {
+      } else if (tel.length !== 13 || !tel.startsWith('+998')) {
         setErrorMsg("❌ Telefon raqami to‘liq emas! +998 bilan boshlanishi va 13 ta belgidan iborat bo‘lishi kerak.");
       } else if (!baho) {
         setErrorMsg("❌ Iltimos, mijozga baho bering!");
