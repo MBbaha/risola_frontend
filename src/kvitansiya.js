@@ -79,7 +79,7 @@ function Kvitansiya() {
     if (loading) return;
     setLoading(true);
     try {
-      const res = await axios.post('https://backend-rislola.onrender.com/api/usersKvitansiya/register', {
+      const res = await axios.post('https://risola-backend.onrender.com/userKvitansiya/register', {
         ...form,
         summa: form.summa.replace(/\s/g, ''),
         qoshimchatolov: form.qoshimchatolov.replace(/\s/g, '')
@@ -114,9 +114,7 @@ function Kvitansiya() {
         <div className="firstDiv">
           <h1>{formattedDate}</h1>
           <h1>Naqd pul haqida Kvitansiya</h1>
-         <h1 className='inputCircle'>№ {form.tartibraqam}</h1>
-
-
+          <h1>№<input name="tartibraqam" value={form.tartibraqam} onChange={handleChange} required /></h1>
         </div>
 
         <div className="secondDiv">
