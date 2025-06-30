@@ -38,7 +38,7 @@ function Kvitansiya() {
   useEffect(() => {
     const fetchLastNumber = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/userKvitansiya/getAll'); // backendga moslang
+        const res = await axios.get('https://risola-backend.onrender.com/userKvitansiya/getUsers'); // backendga moslang
         const data = res.data;
 
         let nextNumber = '1001';
@@ -101,7 +101,7 @@ function Kvitansiya() {
     if (loading) return;
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/userKvitansiya/register', {
+      const res = await axios.post('https://risola-backend.onrender.com/userKvitansiya/register', {
         ...form,
         summa: form.summa.replace(/\s/g, ''),
         qoshimchatolov: form.qoshimchatolov.replace(/\s/g, '')
