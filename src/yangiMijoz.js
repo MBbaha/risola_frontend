@@ -8,7 +8,7 @@ function YangiMijoz() {
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [errors, setErrors] = useState({});
-  const [baho, setBaho] = useState(null);
+  const [baho, setBaho] = useState(null); // boshida null
 
   const famRef = useRef();
   const ismRef = useRef();
@@ -25,11 +25,16 @@ function YangiMijoz() {
     const tel = telRef.current.value.trim();
     const summa = summaRef.current.value.trim();
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const inputDate = new Date(sana);
+    inputDate.setHours(0, 0, 0, 0);
+
     const validationErrors = {
       fam: !fam,
       ism: !ism,
       location: !location,
-      sana: !sana, // 🔁 faqat bo‘sh bo‘lsa xato
+      sana: !sana || inputDate > today,
       tel: tel.length !== 13 || !tel.startsWith('+998'),
       summa: !summa,
       baho: !baho,
@@ -38,8 +43,8 @@ function YangiMijoz() {
     setErrors(validationErrors);
 
     if (Object.values(validationErrors).some(Boolean)) {
-      if (!sana) {
-        setErrorMsg("❌ Sana tanlanmagan!");
+      if (!sana || inputDate > today) {
+        setErrorMsg("❌ Sana xato! Kelajak sanani kiritmang.");
       } else if (tel.length !== 13 || !tel.startsWith('+998')) {
         setErrorMsg("❌ Telefon raqami to‘liq emas! +998 bilan boshlanishi va 13 ta belgidan iborat bo‘lishi kerak.");
       } else if (!baho) {
@@ -52,7 +57,7 @@ function YangiMijoz() {
     }
 
     try {
-      const res = await axios.post("https://risola-backend.onrender.com/api/users/register", {
+      const res = await axios.post("https://backend-rislola.onrender.com/api/users/register", {
         firstname: ism,
         lastname: fam,
         location: location,
@@ -73,7 +78,7 @@ function YangiMijoz() {
         sanaRef.current.value = '';
         telRef.current.value = '';
         summaRef.current.value = '';
-        setBaho(null);
+        setBaho(null); // baho tozalanmoqda
         setTimeout(() => setSuccessMsg(''), 3000);
       }
     } catch (error) {
@@ -128,6 +133,7 @@ function YangiMijoz() {
           type="date"
           ref={sanaRef}
           className={`yangi-input ${errors.sana ? 'yangi-error-input' : ''}`}
+          max={new Date().toISOString().split('T')[0]}
           onKeyDown={(e) => handleKeyDown(e, telRef)}
         />
         <input
