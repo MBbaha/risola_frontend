@@ -38,19 +38,19 @@ function Kvitansiya() {
   useEffect(() => {
     const fetchLastNumber = async () => {
       try {
-        const res = await axios.get('https://risola-backend.onrender.com/api/userKvitansiya/getUsers'); // backendga moslang
+        const res = await axios.get('https://backend-rislola.onrender.com/api/userKvitansiya/getUsers'); // backendga moslang
         const data = res.data;
 
-        let nextNumber = '1001';
+        let nextNumber = '001';
         if (Array.isArray(data) && data.length > 0) {
           const last = data[data.length - 1];
-          const lastNum = parseInt(last.tartibraqam || '1000', 10);
+          const lastNum = parseInt(last.tartibraqam || '000', 10);
           nextNumber = (lastNum + 1).toString();
         }
         setForm(prev => ({ ...prev, tartibraqam: nextNumber }));
       } catch (err) {
         console.error("Tartib raqam olishda xatolik:", err.message);
-        setForm(prev => ({ ...prev, tartibraqam: '1001' })); // fallback
+        setForm(prev => ({ ...prev, tartibraqam: '001' })); // fallback
       }
     };
     fetchLastNumber();
@@ -101,7 +101,7 @@ function Kvitansiya() {
     if (loading) return;
     setLoading(true);
     try {
-      const res = await axios.post('https://risola-backend.onrender.com/api/userKvitansiya/register', {
+      const res = await axios.post('https://backend-rislola.onrender.com/api/userKvitansiya/register', {
         ...form,
         summa: form.summa.replace(/\s/g, ''),
         qoshimchatolov: form.qoshimchatolov.replace(/\s/g, '')
