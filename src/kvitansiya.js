@@ -34,27 +34,21 @@ function Kvitansiya() {
   const [loading, setLoading] = useState(false);
   const [showPrintButton, setShowPrintButton] = useState(false);
 
-  // 🔄 Tartib raqamini avtomatik yuklash (oxirgi raqamga qarab +1)
   useEffect(() => {
-    const fetchLastNumber = async () => {
-      try {
-        const res = await axios.get('https://backend-rislola.onrender.com/api/userKvitansiya/getUsers'); // backendga moslang
-        const data = res.data;
+  const fetchRandomNumber = () => {
+    // 1 dan 999 gacha random raqam yaratish
+    const randomNum = Math.floor(Math.random() * 99) + 1;
 
-        let nextNumber = '001';
-        if (Array.isArray(data) && data.length > 0) {
-          const last = data[data.length - 1];
-          const lastNum = parseInt(last.tartibraqam || '000', 10);
-          nextNumber = (lastNum + 1).toString();
-        }
-        setForm(prev => ({ ...prev, tartibraqam: nextNumber }));
-      } catch (err) {
-        console.error("Tartib raqam olishda xatolik:", err.message);
-        setForm(prev => ({ ...prev, tartibraqam: '001' })); // fallback
-      }
-    };
-    fetchLastNumber();
-  }, []);
+    // Uni 3 xonali qilib formatlash (masalan: 7 -> "007")
+    const formatted = randomNum.toString().padStart(3, '0');
+
+    console.log("🎲 Random tartib raqam:", formatted);
+
+    setForm(prev => ({ ...prev, tartibraqam: formatted }));
+  };
+
+  fetchRandomNumber();
+}, []);
 
   const formatNumber = val => {
     const cleaned = val.replace(/\D/g, '');
