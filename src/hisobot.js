@@ -7,8 +7,8 @@ import jsPDF from 'jspdf';
 import './hisobot.css';
 
 const tumans = [
-  'kosonsoy', 'mingbuloq', 'namangan shahar', 'norin', 'pop', 'toʻraqoʻrgʻon',
-  'uychi', 'uchqoʻrgʻon', 'chortoq', 'chust', 'yangiqoʻrgʻon'
+  'kosonsoy', 'mingbuloq', 'namangan sh', 'norin', 'pop', 'toʻraqoʻrgʻon',
+  'uychi', 'uchqoʻrgʻon', 'chortoq', 'chust', 'yangiqoʻrgʻon',"namangan t"
 ];
 
 const COLORS = ['#EF4444', '#F97316', '#F59E0B', '#84CC16', '#22C55E', '#06B6D4', '#3B82F6', '#6366F1', '#8B5CF6', '#EC4899', '#F43F5E'];
