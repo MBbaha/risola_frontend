@@ -140,7 +140,7 @@ function YangiMijoz() {
           type="text"
           placeholder="Telefon raqami (+998...)"
           ref={telRef}
-          maxLength={13}
+          maxLength={9}
           className={`yangi-input ${errors.tel ? 'yangi-error-input' : ''}`}
           onKeyDown={(e) => handleKeyDown(e, summaRef)}
         />
