@@ -25,8 +25,8 @@ function MijozlarRoyxati() {
   };
 
   const tumans = useMemo(() => ([
-    'kosonsoy', 'mingbuloq', 'namangan shahar', 'norin', 'pop', 'toʻraqoʻrgʻon',
-    'uychi', 'uchqoʻrgʻon', 'chortoq', 'chust', 'yangiqoʻrgʻon'
+    'kosonsoy', 'mingbuloq', 'namangan shahar', 'norin', 'pop', "to'raqo'rg'on",
+    'uychi', "uchqo'rg'on", 'chortoq', 'chust', "yangiqo'rg'on","namangan tumani"
   ]), []);
 
   const capitalizeWords = (str) => {
