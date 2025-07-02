@@ -35,7 +35,7 @@ function YangiMijoz() {
       ism: !ism,
       location: !location,
       sana: !sana ,
-      tel: !tel.length !== 9,
+      tel:  !tel || tel.length !== 9,
       summa: !summa,
       baho: !baho,
     };
@@ -45,7 +45,7 @@ function YangiMijoz() {
     if (Object.values(validationErrors).some(Boolean)) {
       if (!sana) {
         setErrorMsg("❌ Sana xato! Kelajak sanani kiritmang.");
-      } else if (!tel.length !== 9) {
+      } else if (!tel || tel.length !== 9) {
         setErrorMsg("❌ Telefon raqami to‘liq emas! 9 ta belgidan iborat bo‘lishi kerak.");
       } else if (!baho) {
         setErrorMsg("❌ Iltimos, mijozga baho bering!");
