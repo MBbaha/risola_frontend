@@ -142,7 +142,7 @@ function Kvitansiya() {
 
         <div className="thridDiv">
           <h2>Kim tomonidan to'lov qilindi</h2>
-          <h2><input name="fullname" placeholder="Ism Familya" value={form.fullname} onChange={handleChange} required /></h2>
+          <h2><input name="fullname" placeholder="Ism Familya" value={form.fullname} onChange={handleChange}   style={{ width: '300px' }} required /></h2>
           <h2>Necha kishiga to‘lov qilindi</h2>
           <h3><input name="amountpeople" type="number" value={form.amountpeople} onChange={handleChange} required /></h3>
         </div>
