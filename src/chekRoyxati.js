@@ -95,7 +95,7 @@ export default function ChekRoyxati() {
   };
 
   const confirmDelete = async () => {
-    const secretCode = '1234';
+    const secretCode = '6062';
     if (passwordInput !== secretCode) {
       alert("❌ Noto‘g‘ri kod!");
       return;
