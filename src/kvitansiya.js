@@ -185,6 +185,24 @@ function Kvitansiya() {
           </h2>
         </div>
 
+                <div className="eightDiv">
+         <h2>Qabul qiluvchi kassir</h2>
+  <h2>
+   <select
+       name="kassir"
+    value={form.kassir}
+    onChange={handleChange}
+   
+    required
+    >
+      <option value="Baxtiyor">Atamirzayev Baxtiyor</option>
+      <option value="Abdugani">Qahharov Abdugani</option>
+      <option value="Bositxon">Saydullayev Bositxon</option>
+      
+    </select>
+  </h2>
+        </div>
+
         <div className="seventhDiv" style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1rem' }}>
           <button
             type="submit"
