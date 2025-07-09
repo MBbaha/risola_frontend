@@ -24,6 +24,7 @@ function Kvitansiya() {
     amountpeople: '',
     amountroom: '',
     location: '',
+    dollar:'',
     isactive: true
   };
 
@@ -84,7 +85,7 @@ function Kvitansiya() {
       newVal = formatNumber(value);
       setSumInWords(numberToWordsUzbek(newVal));
     }
-    if (name === 'qoshimchatolov') {
+    if (name === 'qoshimchatolov'||name === 'dollar') {
       newVal = formatNumber(value);
     }
     setForm(f => ({ ...f, [name]: newVal }));
@@ -98,7 +99,8 @@ function Kvitansiya() {
       const res = await axios.post('https://backend-rislola.onrender.com/api/userKvitansiya/register', {
         ...form,
         summa: form.summa.replace(/\s/g, ''),
-        qoshimchatolov: form.qoshimchatolov.replace(/\s/g, '')
+        qoshimchatolov: form.qoshimchatolov.replace(/\s/g, ''),
+        dollar: form.dollar.replace(/\s/g, '')
       });
       if (res.data.success) {
         setSuccessMsg("✅ Kvitansiya muvaffaqiyatli saqlandi!");
@@ -185,6 +187,20 @@ function Kvitansiya() {
           </h2>
         </div>
 
+ <div className="ninethDiv">
+  <input
+    type="text"
+    name="dollar"
+    placeholder="Dollar kursi"
+    value={form.dollar}
+    onChange={handleChange}
+    required
+  />
+</div>
+
+
+
+              
                 <div className="eightDiv">
          <h2>Qabul qiluvchi kassir</h2>
   <h2>
