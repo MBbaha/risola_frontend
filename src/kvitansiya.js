@@ -187,16 +187,7 @@ function Kvitansiya() {
           </h2>
         </div>
 
- <div className="ninethDiv">
-  <input
-    type="text"
-    name="dollar"
-    placeholder="Dollar kursi"
-    value={form.dollar}
-    onChange={handleChange}
-    required
-  />
-</div>
+ 
 
 
 
@@ -218,6 +209,16 @@ function Kvitansiya() {
     </select>
   </h2>
         </div>
+      <div className="ninethDiv">
+  <input
+    type="text"
+    name="dollar"
+    placeholder="Dollar kursi"
+    value={form.dollar}
+    onChange={handleChange}
+    required
+  />
+</div>
 
         <div className="seventhDiv" style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1rem' }}>
           <button
