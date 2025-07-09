@@ -199,6 +199,7 @@ export default function ChekRoyxati() {
                 <th>Qo‘shimcha xona</th>
                 <th>Tartib raqami</th>
                 <th>Chek sanasi</th>
+                <th>Dollar kursi</th>
                 <th>Amallar</th>
               </tr>
             </thead>
@@ -215,6 +216,7 @@ export default function ChekRoyxati() {
                   <td>{Number(item.qoshimchatolov || 0).toLocaleString()} so‘m</td>
                   <td>{item.amountroom || '-'}</td>
                   <td>{item.tartibraqam}</td>
+                  <td>{Number(item.dollar || 0).toLocaleString()} so‘m</td>
                   <td>{formatDate(item.createdAt)}</td>
                   <td>
                     <button className="delete" onClick={() => handleDelete(item._id)}>O‘chirish</button>
