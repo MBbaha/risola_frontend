@@ -198,8 +198,9 @@ export default function ChekRoyxati() {
                 <th>Qo‘shimcha to‘lov</th>
                 <th>Qo‘shimcha xona</th>
                 <th>Tartib raqami</th>
-                <th>Chek sanasi</th>
                 <th>Dollar kursi</th>
+                <th>Chek sanasi</th>
+                
                 <th>Amallar</th>
               </tr>
             </thead>
