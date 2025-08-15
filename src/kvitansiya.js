@@ -38,7 +38,7 @@ function Kvitansiya() {
   useEffect(() => {
   const fetchRandomNumber = () => {
     // 1 dan 999 gacha random raqam yaratish
-    const randomNum = Math.floor(Math.random() * 99) + 1;
+    const randomNum = Math.floor(Math.random() * 9999) + 1;
 
     // Uni 3 xonali qilib formatlash (masalan: 7 -> "007")
     const formatted = randomNum.toString().padStart(3, '0');
@@ -250,3 +250,4 @@ function Kvitansiya() {
 }
 
 export default Kvitansiya;
+
