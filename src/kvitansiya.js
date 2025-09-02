@@ -13,6 +13,7 @@ function Kvitansiya() {
   const months = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"];
   const monthName = months[today.getMonth()];
   const formattedDate = `${day}-${monthName} ${year}-yil`;
+ 
 
   const initialForm = {
     fullname: '',
@@ -34,6 +35,7 @@ function Kvitansiya() {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPrintButton, setShowPrintButton] = useState(false);
+   const [form, setForm] = useState({ phonenumber: "" });
 
   useEffect(() => {
   const fetchRandomNumber = () => {
@@ -77,7 +79,21 @@ function Kvitansiya() {
       ].filter(Boolean).join(' ');
     }).filter(Boolean).join(' ').trim() + ' so‘m';
   };
+ const handleChange2 = (e) => {
+    let value = e.target.value.replace(/\D/g, ""); // faqat raqam qoldiramiz
 
+    // Format: 90 759 67 79
+    if (value.length > 2 && value.length <= 5) {
+      value = value.replace(/(\d{2})(\d+)/, "$1 $2");
+    } else if (value.length > 5 && value.length <= 7) {
+      value = value.replace(/(\d{2})(\d{3})(\d+)/, "$1 $2 $3");
+    } else if (value.length > 7) {
+      value = value.replace(/(\d{2})(\d{3})(\d{2})(\d+)/, "$1 $2 $3 $4");
+    }
+
+    setForm({ ...form, phonenumber: value });
+  };
+  
   const handleChange = e => {
     const { name, value } = e.target;
     let newVal = value;
@@ -149,11 +165,18 @@ function Kvitansiya() {
           <h3><input name="amountpeople" type="number" value={form.amountpeople} onChange={handleChange} required /></h3>
         </div>
 
-        <div className="fourthDiv">
-          <h2>Pulni qabul qiluvchi subyekt</h2>
-          <h2>"Risola Travel Lux" MCHJ</h2>
-          <input name="phonenumber" placeholder="Telefon raqami" value={form.phonenumber} onChange={handleChange} required />
-        </div>
+       <div className="fourthDiv">
+      <h2>Pulni qabul qiluvchi subyekt</h2>
+      <h2>"Risola Travel Lux" MCHJ</h2>
+      <input
+        name="phonenumber"
+        placeholder="Telefon raqami"
+        value={form.phonenumber}
+        onChange={handleChange2}
+        maxLength={12} // bo'shliqlar bilan birga uzunlik
+        required
+      />
+    </div>
 
         <div className="fivethDiv">
           <div className="summaDiv">
@@ -250,4 +273,5 @@ function Kvitansiya() {
 }
 
 export default Kvitansiya;
+
 
