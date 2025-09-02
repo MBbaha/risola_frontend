@@ -35,7 +35,7 @@ function Kvitansiya() {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPrintButton, setShowPrintButton] = useState(false);
-   const [form, setForm] = useState({ phonenumber: "" });
+   const [phoneform, setPhoneForm] = useState({ phonenumber: "" });
 
   useEffect(() => {
   const fetchRandomNumber = () => {
@@ -273,5 +273,6 @@ function Kvitansiya() {
 }
 
 export default Kvitansiya;
+
 
 
