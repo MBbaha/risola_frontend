@@ -101,7 +101,7 @@ function Kvitansiya() {
     if (loading) return;
     setLoading(true);
     try {
-      const res = await axios.post('https://backend-risola.onrender.com/api/userKvitansiya/register', {
+      const res = await axios.post('https://backend-rislola.onrender.com/api/userKvitansiya/register', {
         ...form,
         summa: form.summa.replace(/\s/g, ''),
         qoshimchatolov: form.qoshimchatolov.replace(/\s/g, ''),
