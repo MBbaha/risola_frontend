@@ -13,7 +13,6 @@ function Kvitansiya() {
   const months = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"];
   const monthName = months[today.getMonth()];
   const formattedDate = `${day}-${monthName} ${year}-yil`;
- 
 
   const initialForm = {
     fullname: '',
@@ -25,7 +24,7 @@ function Kvitansiya() {
     amountpeople: '',
     amountroom: '',
     location: '',
-    dollar:'',
+    dollar: '',
     isactive: true
   };
 
@@ -35,23 +34,15 @@ function Kvitansiya() {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPrintButton, setShowPrintButton] = useState(false);
-   const [phoneform, setPhoneForm] = useState({ phonenumber: "" });
 
   useEffect(() => {
-  const fetchRandomNumber = () => {
-    // 1 dan 999 gacha random raqam yaratish
-    const randomNum = Math.floor(Math.random() * 9999) + 1;
-
-    // Uni 3 xonali qilib formatlash (masalan: 7 -> "007")
-    const formatted = randomNum.toString().padStart(3, '0');
-
-    console.log("🎲 Random tartib raqam:", formatted);
-
-    setForm(prev => ({ ...prev, tartibraqam: formatted }));
-  };
-
-  fetchRandomNumber();
-}, []);
+    const fetchRandomNumber = () => {
+      const randomNum = Math.floor(Math.random() * 9999) + 1;
+      const formatted = randomNum.toString().padStart(3, '0');
+      setForm(prev => ({ ...prev, tartibraqam: formatted }));
+    };
+    fetchRandomNumber();
+  }, []);
 
   const formatNumber = val => {
     const cleaned = val.replace(/\D/g, '');
@@ -59,8 +50,8 @@ function Kvitansiya() {
   };
 
   const numberToWordsUzbek = numStr => {
-    const ones = ['', 'bir', 'ikki', 'uch', "to‘rt", 'besh', 'olti', 'yetti', 'sakkiz', "to‘qqiz"];
-    const tens = ['', 'o‘n', 'yigirma', 'o‘ttiz', 'qirq', 'ellik', 'oltmish', 'yetmish', 'sakson', 'to‘qson'];
+    const ones = ['', 'bir', 'ikki', 'uch', "to'rt", 'besh', 'olti', 'yetti', 'sakkiz', "to'qqiz"];
+    const tens = ['', "o'n", 'yigirma', "o'ttiz", 'qirq', 'ellik', 'oltmish', 'yetmish', 'sakson', "to'qson"];
     const thousands = ['', 'ming', 'million', 'milliard'];
 
     const groups = numStr.replace(/\s/g, '').match(/\d{1,3}(?=(\d{3})*$)/g);
@@ -77,23 +68,21 @@ function Kvitansiya() {
         o ? ones[o] : '',
         thousands[groups.length - 1 - i]
       ].filter(Boolean).join(' ');
-    }).filter(Boolean).join(' ').trim() + ' so‘m';
+    }).filter(Boolean).join(' ').trim() + " so'm";
   };
- const handleChange2 = (e) => {
-    let value = e.target.value.replace(/\D/g, ""); // faqat raqam qoldiramiz
 
-    // Format: 90 759 67 79
+  const handleChange2 = (e) => {
+    let value = e.target.value.replace(/\D/g, '');
     if (value.length > 2 && value.length <= 5) {
-      value = value.replace(/(\d{2})(\d+)/, "$1 $2");
+      value = value.replace(/(\d{2})(\d+)/, '$1 $2');
     } else if (value.length > 5 && value.length <= 7) {
-      value = value.replace(/(\d{2})(\d{3})(\d+)/, "$1 $2 $3");
+      value = value.replace(/(\d{2})(\d{3})(\d+)/, '$1 $2 $3');
     } else if (value.length > 7) {
-      value = value.replace(/(\d{2})(\d{3})(\d{2})(\d+)/, "$1 $2 $3 $4");
+      value = value.replace(/(\d{2})(\d{3})(\d{2})(\d+)/, '$1 $2 $3 $4');
     }
-
     setForm({ ...form, phonenumber: value });
   };
-  
+
   const handleChange = e => {
     const { name, value } = e.target;
     let newVal = value;
@@ -101,7 +90,7 @@ function Kvitansiya() {
       newVal = formatNumber(value);
       setSumInWords(numberToWordsUzbek(newVal));
     }
-    if (name === 'qoshimchatolov'||name === 'dollar') {
+    if (name === 'qoshimchatolov' || name === 'dollar') {
       newVal = formatNumber(value);
     }
     setForm(f => ({ ...f, [name]: newVal }));
@@ -112,7 +101,7 @@ function Kvitansiya() {
     if (loading) return;
     setLoading(true);
     try {
-      const res = await axios.post('https://backend-rislola.onrender.com/api/userKvitansiya/register', {
+      const res = await axios.post('https://backend-risola.onrender.com/api/userKvitansiya/register', {
         ...form,
         summa: form.summa.replace(/\s/g, ''),
         qoshimchatolov: form.qoshimchatolov.replace(/\s/g, ''),
@@ -160,30 +149,55 @@ function Kvitansiya() {
 
         <div className="thridDiv">
           <h2>Kim tomonidan to'lov qilindi</h2>
-          <h2><input name="fullname" placeholder="Ism Familya" value={form.fullname} onChange={handleChange}   style={{ width: '300px' }} required /></h2>
-          <h2>Necha kishiga to‘lov qilindi</h2>
-          <h3><input name="amountpeople" type="number" value={form.amountpeople} onChange={handleChange} required /></h3>
+          <h2>
+            <input
+              name="fullname"
+              placeholder="Ism Familya"
+              value={form.fullname}
+              onChange={handleChange}
+              style={{ width: '300px' }}
+              required
+            />
+          </h2>
+          <h2>Necha kishiga to'lov qilindi</h2>
+          <h3>
+            <input
+              name="amountpeople"
+              type="number"
+              value={form.amountpeople}
+              onChange={handleChange}
+              required
+            />
+          </h3>
         </div>
 
-       <div className="fourthDiv">
-      <h2>Pulni qabul qiluvchi subyekt</h2>
-      <h2>"Risola Travel Lux" MCHJ</h2>
-      <input
-        name="phonenumber"
-        placeholder="Telefon raqami"
-        value={form.phonenumber}
-        onChange={handleChange2}
-        maxLength={12} // bo'shliqlar bilan birga uzunlik
-        required
-      />
-    </div>
+        <div className="fourthDiv">
+          <h2>Pulni qabul qiluvchi subyekt</h2>
+          <h2>"Risola Travel Lux" MCHJ</h2>
+          <input
+            name="phonenumber"
+            placeholder="Telefon raqami"
+            value={form.phonenumber}
+            onChange={handleChange2}
+            maxLength={12}
+            required
+          />
+        </div>
 
         <div className="fivethDiv">
           <div className="summaDiv">
             <h2>So'z bilan yozilgan summa</h2>
             <p style={{ fontWeight: 'bold' }}>{sumInWords}</p>
           </div>
-          <h2><input name="location" placeholder="Qayerdan" value={form.location} onChange={handleChange} required /></h2>
+          <h2>
+            <input
+              name="location"
+              placeholder="Qayerdan"
+              value={form.location}
+              onChange={handleChange}
+              required
+            />
+          </h2>
           <h2>
             <input
               name="summa"
@@ -198,50 +212,51 @@ function Kvitansiya() {
 
         <div className="sixthDiv">
           <h2>Qo'shimcha to'lov alohida xona uchun</h2>
-          <h2><input name="amountroom" style={{ width: 40 }} value={form.amountroom} onChange={handleChange} /></h2>
+          <h2>
+            <input
+              name="amountroom"
+              style={{ width: 40 }}
+              value={form.amountroom}
+              onChange={handleChange}
+            />
+          </h2>
           <h2>
             <input
               name="qoshimchatolov"
               value={form.qoshimchatolov}
               onChange={handleChange}
-              placeholder="Qo‘shimcha to‘lov"
+              placeholder="Qo'shimcha to'lov"
               style={{ textAlign: 'center' }}
             />
           </h2>
         </div>
 
- 
-
-
-
-              
-                <div className="eightDiv">
-         <h2>Qabul qiluvchi kassir</h2>
-  <h2>
-   <select
-       name="kassir"
-    value={form.kassir}
-    onChange={handleChange}
-   
-    required
-    >
-      <option value="Baxtiyor">Atamirzayev Baxtiyor</option>
-      <option value="Abdugani">Qahharov Abdugani</option>
-      <option value="Bositxon">Saydullayev Bositxon</option>
-      
-    </select>
-  </h2>
+        <div className="eightDiv">
+          <h2>Qabul qiluvchi kassir</h2>
+          <h2>
+            <select
+              name="kassir"
+              value={form.kassir}
+              onChange={handleChange}
+              required
+            >
+              <option value="Baxtiyor">Atamirzayev Baxtiyor</option>
+              <option value="Abdugani">Qahharov Abdugani</option>
+              <option value="Bositxon">Saydullayev Bositxon</option>
+            </select>
+          </h2>
         </div>
-      <div className="ninethDiv">
-  <input
-    type="text"
-    name="dollar"
-    placeholder="Dollar kursi"
-    value={form.dollar}
-    onChange={handleChange}
-    required
-  />
-</div>
+
+        <div className="ninethDiv">
+          <input
+            type="text"
+            name="dollar"
+            placeholder="Dollar kursi"
+            value={form.dollar}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
         <div className="seventhDiv" style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1rem' }}>
           <button
@@ -266,13 +281,10 @@ function Kvitansiya() {
 
       <div className="footerButton">
         <button className="back-button" onClick={() => navigate('/')}>Asosiy sahifaga qaytish</button>
-        <button className="back-button" onClick={() => navigate('/chekRoyxati')}>Cheklar ro‘yxatini ko‘rish</button>
+        <button className="back-button" onClick={() => navigate('/chekRoyxati')}>Cheklar ro'yxatini ko'rish</button>
       </div>
     </div>
   );
 }
 
 export default Kvitansiya;
-
-
-
