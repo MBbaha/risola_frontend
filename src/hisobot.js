@@ -19,7 +19,7 @@ const HisobotDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('https://backend-rislola.onrender.com/api/users/getUsers')
+    axios.get('https://backend-risola.onrender.com/api/users/getUsers')
       .then(res => setUsers(res.data.data))
       .catch(err => console.error("Xatolik:", err));
   }, []);
@@ -113,7 +113,7 @@ const HisobotDashboard = () => {
   return (
     <div className="hisobot-container">
       <div id="report-content" className="report-box">
-        <h1 className="report-title">📊 So‘nggi {reportRange} oylik tumanlar kesimidagi hisobot</h1>
+        <h1 className="report-title">📊 So'nggi {reportRange} oylik tumanlar kesimidagi hisobot</h1>
 
         <div className="radio-group">
           <label><input type="radio" name="range" value={3} checked={reportRange === 3} onChange={() => setReportRange(3)} /> 3 oy</label>
