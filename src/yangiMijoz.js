@@ -8,7 +8,7 @@ function YangiMijoz() {
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [errors, setErrors] = useState({});
-  const [baho, setBaho] = useState(null); // boshida null
+  const [baho, setBaho] = useState(null);
 
   const famRef = useRef();
   const ismRef = useRef();
@@ -34,8 +34,8 @@ function YangiMijoz() {
       fam: !fam,
       ism: !ism,
       location: !location,
-      sana: !sana ,
-      tel:  !tel || tel.length !== 9,
+      sana: !sana,
+      tel: !tel || tel.length !== 9,
       summa: !summa,
       baho: !baho,
     };
@@ -46,18 +46,18 @@ function YangiMijoz() {
       if (!sana) {
         setErrorMsg("❌ Sana xato! Kelajak sanani kiritmang.");
       } else if (!tel || tel.length !== 9) {
-        setErrorMsg("❌ Telefon raqami to‘liq emas! 9 ta belgidan iborat bo‘lishi kerak.");
+        setErrorMsg("❌ Telefon raqami to'liq emas! 9 ta belgidan iborat bo'lishi kerak.");
       } else if (!baho) {
         setErrorMsg("❌ Iltimos, mijozga baho bering!");
       } else {
-        setErrorMsg("❌ Ma'lumotlar to‘liq kiritilmagan!");
+        setErrorMsg("❌ Ma'lumotlar to'liq kiritilmagan!");
       }
       setSuccessMsg('');
       return;
     }
 
     try {
-      const res = await axios.post("https://backend-rislola.onrender.com/api/users/register", {
+      const res = await axios.post("https://backend-risola.onrender.com/api/users/register", {
         firstname: ism,
         lastname: fam,
         location: location,
@@ -78,7 +78,7 @@ function YangiMijoz() {
         sanaRef.current.value = '';
         telRef.current.value = '';
         summaRef.current.value = '';
-        setBaho(null); // baho tozalanmoqda
+        setBaho(null);
         setTimeout(() => setSuccessMsg(''), 3000);
       }
     } catch (error) {
@@ -101,7 +101,7 @@ function YangiMijoz() {
   return (
     <div className="yangi-mijoz-container">
       <h1 className="yangi-title">➕ Yangi Mijoz.😊</h1>
-      <p className="yangi-subtitle">Ma'lumotlarni to‘ldiring va saqlang.😊</p>
+      <p className="yangi-subtitle">Ma'lumotlarni to'ldiring va saqlang.😊</p>
 
       {successMsg && <div className="yangi-success">{successMsg}</div>}
       {errorMsg && <div className="yangi-error">{errorMsg}</div>}
@@ -193,7 +193,7 @@ function YangiMijoz() {
           ⬅️ Asosiy sahifa
         </button>
         <button className="yangi-btn-secondary" onClick={() => navigate('/mijozlarRoyxati')}>
-          📋 Mijozlar ro‘yxati
+          📋 Mijozlar ro'yxati
         </button>
       </div>
     </div>
