@@ -27,9 +27,9 @@ export default function ChekRoyxati() {
   };
 
   const numberToWordsUzbek = (num) => {
-    const ones = ['', 'bir', 'ikki', 'uch', 'to‘rt', 'besh', 'olti', 'yetti', 'sakkiz', 'to‘qqiz'];
-    const tens = ['', '', 'yigirma', 'o‘ttiz', 'qirq', 'ellik', 'oltmish', 'yetmish', 'sakson', 'to‘qson'];
-    const teens = ['o‘n', 'o‘n bir', 'o‘n ikki', 'o‘n uch', 'o‘n to‘rt', 'o‘n besh', 'o‘n olti', 'o‘n yetti', 'o‘n sakkiz', 'o‘n to‘qqiz'];
+    const ones = ['', 'bir', 'ikki', 'uch', 'to\'rt', 'besh', 'olti', 'yetti', 'sakkiz', 'to\'qqiz'];
+    const tens = ['', '', 'yigirma', 'o\'ttiz', 'qirq', 'ellik', 'oltmish', 'yetmish', 'sakson', 'to\'qson'];
+    const teens = ['o\'n', 'o\'n bir', 'o\'n ikki', 'o\'n uch', 'o\'n to\'rt', 'o\'n besh', 'o\'n olti', 'o\'n yetti', 'o\'n sakkiz', 'o\'n to\'qqiz'];
     const thousands = ['', 'ming', 'million', 'milliard'];
 
     if (num === 0) return 'nol';
@@ -63,13 +63,13 @@ export default function ChekRoyxati() {
       i++;
     }
 
-    return parts.join(' ').trim() + ' so‘m';
+    return parts.join(' ').trim() + ' so\'m';
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get('https://backend-rislola.onrender.com/api/userKvitansiya/getUsers');
+        const res = await axios.get('https://backend-risola.onrender.com/api/userKvitansiya/getUsers');
         if (res.data.success) {
           const enrichedData = res.data.data.map(item => ({
             ...item,
@@ -97,16 +97,16 @@ export default function ChekRoyxati() {
   const confirmDelete = async () => {
     const secretCode = '6062';
     if (passwordInput !== secretCode) {
-      alert("❌ Noto‘g‘ri kod!");
+      alert("❌ Noto'g'ri kod!");
       return;
     }
 
     try {
-      await axios.delete(`https://backend-rislola.onrender.com/api/userKvitansiya/delete/${deleteId}`);
+      await axios.delete(`https://backend-risola.onrender.com/api/userKvitansiya/delete/${deleteId}`);
       setCheklar(prev => prev.filter(item => item._id !== deleteId));
-      alert("✅ Kvitansiya muvaffaqiyatli o‘chirildi.");
+      alert("✅ Kvitansiya muvaffaqiyatli o'chirildi.");
     } catch (err) {
-      alert("❌ O‘chirishda xatolik yuz berdi.");
+      alert("❌ O'chirishda xatolik yuz berdi.");
     } finally {
       setShowPasswordModal(false);
       setPasswordInput('');
@@ -158,7 +158,7 @@ export default function ChekRoyxati() {
 
   return (
     <div className="cheklar-wrapper">
-      <h1>Cheklar ro‘yxati</h1>
+      <h1>Cheklar ro'yxati</h1>
 
       <div className="action-buttons">
         <div className="button-group">
@@ -193,10 +193,10 @@ export default function ChekRoyxati() {
                 <th>Ism Familya</th>
                 <th>Telefon</th>
                 <th>Yashash manzili</th>
-                <th>To‘lov summasi</th>
+                <th>To'lov summasi</th>
                 <th>Necha kishiga</th>
-                <th>Qo‘shimcha to‘lov</th>
-                <th>Qo‘shimcha xona</th>
+                <th>Qo'shimcha to'lov</th>
+                <th>Qo'shimcha xona</th>
                 <th>Tartib raqami</th>
                 <th>Chek sanasi</th>
                 <th>Dollar kursi</th>
@@ -211,15 +211,15 @@ export default function ChekRoyxati() {
                   <td>{item.fullname}</td>
                   <td>{item.phonenumber}</td>
                   <td>{item.location}</td>
-                  <td>{Number(item.summa || 0).toLocaleString()} so‘m</td>
+                  <td>{Number(item.summa || 0).toLocaleString()} so'm</td>
                   <td>{item.amountpeople}</td>
-                  <td>{Number(item.qoshimchatolov || 0).toLocaleString()} so‘m</td>
+                  <td>{Number(item.qoshimchatolov || 0).toLocaleString()} so'm</td>
                   <td>{item.amountroom || '-'}</td>
                   <td>{item.tartibraqam}</td>
                   <td>{formatDate(item.createdAt)}</td>
-                  <td>{Number(item.dollar || 0).toLocaleString()} so‘m</td>
+                  <td>{Number(item.dollar || 0).toLocaleString()} so'm</td>
                   <td>
-                    <button className="delete" onClick={() => handleDelete(item._id)}>O‘chirish</button>
+                    <button className="delete" onClick={() => handleDelete(item._id)}>O'chirish</button>
                     <button onClick={() => handleDownload(item)}>Yuklash</button>
                   </td>
                 </tr>
@@ -255,8 +255,7 @@ export default function ChekRoyxati() {
       <div style={{ position: 'absolute', left: '-9999px', top: 0 }}>
         {selectedItem && (
           <div ref={componentRef} className="containerKvitansiya">
-            {/* PDF uchun kvitansiya ko‘rinishi */}
-             <div className="firstDiv">
+            <div className="firstDiv">
               <h1>{formatDate(selectedItem.createdAt)}</h1>
               <h1>Naqd pul haqida Kvitansiya</h1>
               <h1 className='inputCircle'>№ {selectedItem.tartibraqam}</h1>
@@ -270,7 +269,7 @@ export default function ChekRoyxati() {
             <div className="thridDiv">
               <h2>Kim tomonidan to'lov qilindi</h2>
               <h2 className='inputCircle'>{selectedItem.fullname}</h2>
-              <h2>Necha kishiga to‘lov qilindi</h2>
+              <h2>Necha kishiga to'lov qilindi</h2>
               <h3 className='inputCircle'>{selectedItem.amountpeople}</h3>
             </div>
             <div className="fourthDiv">
@@ -284,15 +283,14 @@ export default function ChekRoyxati() {
                 <p>{selectedItem.sumInWords}</p>
               </div>
               <h2 className='inputCircle'>{selectedItem.location}</h2>
-              <h2 className='inputCircle'>{Number(selectedItem.summa || 0).toLocaleString()} so‘m</h2>
+              <h2 className='inputCircle'>{Number(selectedItem.summa || 0).toLocaleString()} so'm</h2>
             </div>
             <div className="sixthDiv">
               <h2>Qo'shimcha to'lov alohida xona uchun</h2>
               <h2 className='inputCircle'>{selectedItem.amountroom || '-'}</h2>
-              <h2 className='inputCircle'>{Number(selectedItem.qoshimchatolov || 0).toLocaleString()} so‘m</h2>
+              <h2 className='inputCircle'>{Number(selectedItem.qoshimchatolov || 0).toLocaleString()} so'm</h2>
             </div>
           </div>
-          
         )}
       </div>
     </div>
