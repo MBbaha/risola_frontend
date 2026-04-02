@@ -26,7 +26,7 @@ function MijozlarRoyxati() {
 
   const tumans = useMemo(() => ([
     'kosonsoy', 'mingbuloq', 'namangan shahar', 'norin', 'pop', "to'raqo'rg'on",
-    'uychi', "uchqo'rg'on", 'chortoq', 'chust', "yangiqo'rg'on","namangan tumani"
+    'uychi', "uchqo'rg'on", 'chortoq', 'chust', "yangiqo'rg'on", "namangan tumani"
   ]), []);
 
   const capitalizeWords = (str) => {
@@ -37,7 +37,7 @@ function MijozlarRoyxati() {
   };
 
   useEffect(() => {
-    axios.get("https://backend-rislola.onrender.com/api/users/getUsers")
+    axios.get("https://backend-risola.onrender.com/api/users/getUsers")
       .then(res => {
         const allUsers = res.data.data;
         let filtered = allUsers;
@@ -100,11 +100,11 @@ function MijozlarRoyxati() {
 
   const handleSave = () => {
     if (!formData.firstname || !formData.lastname || !formData.phonenumber || !formData.sana || !formData.summa || !formData.location) {
-      alert("❌ Barcha maydonlar to‘ldirilishi shart!");
+      alert("❌ Barcha maydonlar to'ldirilishi shart!");
       return;
     }
 
-    axios.put(`https://backend-rislola.onrender.com/api/users/updateUsersById/${editingUserId}`, formData)
+    axios.put(`https://backend-risola.onrender.com/api/users/updateUsersById/${editingUserId}`, formData)
       .then(res => {
         const updatedUsers = users.map(user =>
           user._id === editingUserId ? res.data.data : user
@@ -133,8 +133,8 @@ function MijozlarRoyxati() {
   };
 
   const handleDel = (user) => {
-    if (window.confirm("❗ Bu mijozni o‘chirishga ishonchingiz komilmi?")) {
-      axios.delete(`https://backend-rislola.onrender.com/api/users/delete/${user._id}`)
+    if (window.confirm("❗ Bu mijozni o'chirishga ishonchingiz komilmi?")) {
+      axios.delete(`https://backend-risola.onrender.com/api/users/delete/${user._id}`)
         .then(() => {
           const updatedUsers = users.filter(u => u._id !== user._id);
           setUsers(updatedUsers);
@@ -148,8 +148,8 @@ function MijozlarRoyxati() {
           setLocationStats(stats);
         })
         .catch(err => {
-          console.error("❌ O‘chirishda xato:", err);
-          alert("❌ O‘chirishda xatolik yuz berdi.");
+          console.error("❌ O'chirishda xato:", err);
+          alert("❌ O'chirishda xatolik yuz berdi.");
         });
     }
   };
@@ -207,7 +207,7 @@ function MijozlarRoyxati() {
       </button>
 
       <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-        <h2>📍 Tumanlar bo‘yicha mijozlar soni:</h2>
+        <h2>📍 Tumanlar bo'yicha mijozlar soni:</h2>
         <ul>
           {tumans.map(tuman => (
             <li key={tuman}>
@@ -217,7 +217,7 @@ function MijozlarRoyxati() {
         </ul>
 
         <hr />
-        <h2>📆 Oylar bo‘yicha mijozlar soni:</h2>
+        <h2>📆 Oylar bo'yicha mijozlar soni:</h2>
         <ul>
           {oylarStatistikasi.map((oy, index) => (
             <li key={index}>
@@ -320,7 +320,7 @@ function MijozlarRoyxati() {
                   ) : (
                     <>
                       <button onClick={() => handleEdit(user)}>✏️ Tahrirlash</button>
-                      <button onClick={() => handleDel(user)}>🗑️ O‘chirish</button>
+                      <button onClick={() => handleDel(user)}>🗑️ O'chirish</button>
                     </>
                   )}
                 </td>
