@@ -101,12 +101,15 @@ function Kvitansiya() {
     if (loading) return;
     setLoading(true);
     try {
-      const res = await axios.post('https://backend-rislola.onrender.com/api/userKvitansiya/register', {
-        ...form,
-        summa: form.summa.replace(/\s/g, ''),
-        qoshimchatolov: form.qoshimchatolov.replace(/\s/g, ''),
-        dollar: form.dollar.replace(/\s/g, '')
-      });
+     const res = await axios.post(
+  'https://backend-production.up.railway.app/api/userKvitansiya/register',
+  {
+    ...form,
+    summa: form.summa.replace(/\s/g, ''),
+    qoshimchatolov: form.qoshimchatolov.replace(/\s/g, ''),
+    dollar: form.dollar.replace(/\s/g, '')
+  }
+)
       if (res.data.success) {
         setSuccessMsg("✅ Kvitansiya muvaffaqiyatli saqlandi!");
         setErrorMsg('');
