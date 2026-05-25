@@ -1,293 +1,302 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './App.css';
-import './kvitansiya.css';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import './chekRoyxati.css';
 
-function Kvitansiya() {
+export default function ChekRoyxati() {
+  const [cheklar, setCheklar] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [deleteId, setDeleteId] = useState(null);
+
+  const componentRef = useRef();
   const navigate = useNavigate();
 
-  const today = new Date();
-  const day = today.getDate();
-  const year = today.getFullYear();
-  const months = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"];
-  const monthName = months[today.getMonth()];
-  const formattedDate = `${day}-${monthName} ${year}-yil`;
-
-  const initialForm = {
-    fullname: '',
-    phonenumber: '',
-    sana: '',
-    summa: '',
-    tartibraqam: '',
-    qoshimchatolov: '',
-    amountpeople: '',
-    amountroom: '',
-    location: '',
-    dollar: '',
-    isactive: true
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
   };
 
-  const [form, setForm] = useState(initialForm);
-  const [sumInWords, setSumInWords] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showPrintButton, setShowPrintButton] = useState(false);
-
-  useEffect(() => {
-    const fetchRandomNumber = () => {
-      const randomNum = Math.floor(Math.random() * 9999) + 1;
-      const formatted = randomNum.toString().padStart(3, '0');
-      setForm(prev => ({ ...prev, tartibraqam: formatted }));
-    };
-    fetchRandomNumber();
-  }, []);
-
-  const formatNumber = val => {
-    const cleaned = val.replace(/\D/g, '');
-    return cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-  };
-
-  const numberToWordsUzbek = numStr => {
-    const ones = ['', 'bir', 'ikki', 'uch', "to'rt", 'besh', 'olti', 'yetti', 'sakkiz', "to'qqiz"];
-    const tens = ['', "o'n", 'yigirma', "o'ttiz", 'qirq', 'ellik', 'oltmish', 'yetmish', 'sakson', "to'qson"];
+  const numberToWordsUzbek = (num) => {
+    const ones = ['', 'bir', 'ikki', 'uch', 'to\'rt', 'besh', 'olti', 'yetti', 'sakkiz', 'to\'qqiz'];
+    const tens = ['', '', 'yigirma', 'o\'ttiz', 'qirq', 'ellik', 'oltmish', 'yetmish', 'sakson', 'to\'qson'];
+    const teens = ['o\'n', 'o\'n bir', 'o\'n ikki', 'o\'n uch', 'o\'n to\'rt', 'o\'n besh', 'o\'n olti', 'o\'n yetti', 'o\'n sakkiz', 'o\'n to\'qqiz'];
     const thousands = ['', 'ming', 'million', 'milliard'];
 
-    const groups = numStr.replace(/\s/g, '').match(/\d{1,3}(?=(\d{3})*$)/g);
-    if (!groups) return '';
-    return groups.map((g, i) => {
-      const n = parseInt(g, 10);
-      if (n === 0) return '';
-      const h = Math.floor(n / 100);
-      const t = Math.floor((n % 100) / 10);
-      const o = n % 10;
-      return [
-        h ? ones[h] + ' yuz' : '',
-        t ? tens[t] : '',
-        o ? ones[o] : '',
-        thousands[groups.length - 1 - i]
-      ].filter(Boolean).join(' ');
-    }).filter(Boolean).join(' ').trim() + " so'm";
-  };
+    if (num === 0) return 'nol';
 
-  const handleChange2 = (e) => {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.length > 2 && value.length <= 5) {
-      value = value.replace(/(\d{2})(\d+)/, '$1 $2');
-    } else if (value.length > 5 && value.length <= 7) {
-      value = value.replace(/(\d{2})(\d{3})(\d+)/, '$1 $2 $3');
-    } else if (value.length > 7) {
-      value = value.replace(/(\d{2})(\d{3})(\d{2})(\d+)/, '$1 $2 $3 $4');
-    }
-    setForm({ ...form, phonenumber: value });
-  };
+    const chunkToWords = (n) => {
+      let str = '';
+      const hundred = Math.floor(n / 100);
+      const rest = n % 100;
 
-  const handleChange = e => {
-    const { name, value } = e.target;
-    let newVal = value;
-    if (name === 'summa') {
-      newVal = formatNumber(value);
-      setSumInWords(numberToWordsUzbek(newVal));
-    }
-    if (name === 'qoshimchatolov' || name === 'dollar') {
-      newVal = formatNumber(value);
-    }
-    setForm(f => ({ ...f, [name]: newVal }));
-  };
-
-  const handleSubmit = async e => {
-    e.preventDefault();
-    if (loading) return;
-    setLoading(true);
-    try {
-     const res = await axios.post(
-  'https://backend-production.up.railway.app/api/userKvitansiya/register',
-  {
-    ...form,
-    summa: form.summa.replace(/\s/g, ''),
-    qoshimchatolov: form.qoshimchatolov.replace(/\s/g, ''),
-    dollar: form.dollar.replace(/\s/g, '')
-  }
-);
-      if (res.data.success) {
-        setSuccessMsg("✅ Kvitansiya muvaffaqiyatli saqlandi!");
-        setErrorMsg('');
-        setShowPrintButton(true);
-        setTimeout(() => setSuccessMsg(''), 3000);
-      } else {
-        throw new Error(res.data.message || 'Xatolik yuz berdi');
+      if (hundred) str += ones[hundred] + ' yuz ';
+      if (rest >= 10 && rest < 20) str += teens[rest - 10] + ' ';
+      else {
+        const ten = Math.floor(rest / 10);
+        const one = rest % 10;
+        if (ten) str += tens[ten] + ' ';
+        if (one) str += ones[one] + ' ';
       }
+      return str.trim();
+    };
+
+    const parts = [];
+    let i = 0;
+
+    while (num > 0) {
+      const chunk = num % 1000;
+      if (chunk) {
+        const chunkWords = chunkToWords(chunk);
+        parts.unshift(chunkWords + (thousands[i] ? ' ' + thousands[i] : ''));
+      }
+      num = Math.floor(num / 1000);
+      i++;
+    }
+
+    return parts.join(' ').trim() + ' so\'m';
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(
+          'https://backendrisola-production.up.railway.app/api/userKvitansiya/getUsers'
+        );
+        if (res.data.success) {
+          const enrichedData = res.data.data.map(item => ({
+            ...item,
+            sumInWords: numberToWordsUzbek(Number(item.summa || 0))
+          }));
+          setCheklar(enrichedData);
+          setError('');
+        } else {
+          setError(res.data.message);
+        }
+      } catch (err) {
+        setError("Server bilan bog'lanishda xatolik yuz berdi.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleDelete = (id) => {
+    setDeleteId(id);
+    setShowPasswordModal(true);
+  };
+
+  const confirmDelete = async () => {
+    const secretCode = '6062';
+    if (passwordInput !== secretCode) {
+      alert("❌ Noto'g'ri kod!");
+      return;
+    }
+
+    try {
+      await axios.delete(
+        `https://backendrisola-production.up.railway.app/api/userKvitansiya/delete/${deleteId}`
+      );
+      setCheklar(prev => prev.filter(item => item._id !== deleteId));
+      alert("✅ Kvitansiya muvaffaqiyatli o'chirildi.");
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || err.message || "❌ Server xatosi!");
-      setSuccessMsg('');
-      setShowPrintButton(false);
+      alert("❌ O'chirishda xatolik yuz berdi.");
     } finally {
-      setLoading(false);
+      setShowPasswordModal(false);
+      setPasswordInput('');
+      setDeleteId(null);
     }
   };
 
-  const handlePrint = () => {
-    window.print();
+  useEffect(() => {
+    const generatePDF = async () => {
+      if (!selectedItem) return;
+      await new Promise(resolve => setTimeout(resolve, 200));
+      const input = componentRef.current;
+      if (!input) return;
+      try {
+        const canvas = await html2canvas(input);
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`kvitansiya_${selectedItem.tartibraqam || selectedItem._id}.pdf`);
+      } catch (error) {
+        console.error('PDF yaratishda xatolik:', error);
+      } finally {
+        setSelectedItem(null);
+      }
+    };
+
+    generatePDF();
+  }, [selectedItem]);
+
+  const handleDownload = (item) => {
+    setSelectedItem(item);
   };
+
+  const filteredData = cheklar.filter(item => {
+    const term = searchTerm.toLowerCase();
+    return (
+      item.fullname?.toLowerCase().includes(term) ||
+      item.phonenumber?.toLowerCase().includes(term) ||
+      item.tartibraqam?.toLowerCase().includes(term) ||
+      item.location?.toLowerCase().includes(term)
+    );
+  });
+
+  const totalPeople = filteredData.reduce((sum, item) => sum + Number(item.amountpeople || 0), 0);
 
   return (
-    <div style={{ padding: '2rem', textAlign: 'center' }}>
-      {successMsg && <div className="alert success">{successMsg}</div>}
-      {errorMsg && <div className="alert error">{errorMsg}</div>}
+    <div className="cheklar-wrapper">
+      <h1>Cheklar ro'yxati</h1>
 
-      <form onSubmit={handleSubmit} className="containerKvitansiya">
-        <div className="firstDiv">
-          <h1>{formattedDate}</h1>
-          <h1>Naqd pul haqida Kvitansiya</h1>
-          <h1>№ {form.tartibraqam}</h1>
+      <div className="action-buttons">
+        <div className="button-group">
+          <button onClick={() => navigate('/')}>Asosiy sahifaga</button>
+          <button onClick={() => navigate('/kvitansiya')}>Yangi kvitansiya</button>
         </div>
+        <input
+          type="search"
+          className="search-input"
+          placeholder="🔍 Qidirish..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
 
-        <div className="secondDiv">
-          <h2>Uchish sanasi</h2>
-          <h2><input name="sana" type="date" value={form.sana} onChange={handleChange} required /></h2>
-          <h2>To'lov maqsadi</h2>
-          <h2>Umra hizmati</h2>
+      <div className="summary-box">
+        <p><strong>Jami kvitansiyalar:</strong> {filteredData.length} ta</p>
+        <p><strong>Jami insonlar soni:</strong> {totalPeople} nafar</p>
+      </div>
+
+      {loading ? (
+        <p>Yuklanmoqda...</p>
+      ) : error ? (
+        <p style={{ color: 'red' }}>{error}</p>
+      ) : (
+        <div className="table-container">
+          <table className="cheklar-table">
+            <thead>
+              <tr>
+                <th>№</th>
+                <th>Uchish sanasi</th>
+                <th>Ism Familya</th>
+                <th>Telefon</th>
+                <th>Yashash manzili</th>
+                <th>To'lov summasi</th>
+                <th>Necha kishiga</th>
+                <th>Qo'shimcha to'lov</th>
+                <th>Qo'shimcha xona</th>
+                <th>Tartib raqami</th>
+                <th>Chek sanasi</th>
+                <th>Dollar kursi</th>
+                <th>Amallar</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredData.map((item, index) => (
+                <tr key={item._id}>
+                  <td>{index + 1}</td>
+                  <td>{item.sana?.slice(0, 10)}</td>
+                  <td>{item.fullname}</td>
+                  <td>{item.phonenumber}</td>
+                  <td>{item.location}</td>
+                  <td>{Number(item.summa || 0).toLocaleString()} so'm</td>
+                  <td>{item.amountpeople}</td>
+                  <td>{Number(item.qoshimchatolov || 0).toLocaleString()} so'm</td>
+                  <td>{item.amountroom || '-'}</td>
+                  <td>{item.tartibraqam}</td>
+                  <td>{formatDate(item.createdAt)}</td>
+                  <td>{Number(item.dollar || 0).toLocaleString()} so'm</td>
+                  <td>
+                    <button className="delete" onClick={() => handleDelete(item._id)}>O'chirish</button>
+                    <button onClick={() => handleDownload(item)}>Yuklash</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+      )}
 
-        <div className="thridDiv">
-          <h2>Kim tomonidan to'lov qilindi</h2>
-          <h2>
+      {showPasswordModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Maxfiy kodni kiriting:</h3>
             <input
-              name="fullname"
-              placeholder="Ism Familya"
-              value={form.fullname}
-              onChange={handleChange}
-              style={{ width: '300px' }}
-              required
+              type="password"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              placeholder="Parol..."
+              className="password-input"
             />
-          </h2>
-          <h2>Necha kishiga to'lov qilindi</h2>
-          <h3>
-            <input
-              name="amountpeople"
-              type="number"
-              value={form.amountpeople}
-              onChange={handleChange}
-              required
-            />
-          </h3>
-        </div>
-
-        <div className="fourthDiv">
-          <h2>Pulni qabul qiluvchi subyekt</h2>
-          <h2>"Risola Travel Lux" MCHJ</h2>
-          <input
-            name="phonenumber"
-            placeholder="Telefon raqami"
-            value={form.phonenumber}
-            onChange={handleChange2}
-            maxLength={12}
-            required
-          />
-        </div>
-
-        <div className="fivethDiv">
-          <div className="summaDiv">
-            <h2>So'z bilan yozilgan summa</h2>
-            <p style={{ fontWeight: 'bold' }}>{sumInWords}</p>
+            <div className="modal-buttons">
+              <button onClick={confirmDelete}>Tasdiqlash</button>
+              <button onClick={() => {
+                setShowPasswordModal(false);
+                setPasswordInput('');
+                setDeleteId(null);
+              }}>Bekor qilish</button>
+            </div>
           </div>
-          <h2>
-            <input
-              name="location"
-              placeholder="Qayerdan"
-              value={form.location}
-              onChange={handleChange}
-              required
-            />
-          </h2>
-          <h2>
-            <input
-              name="summa"
-              value={form.summa}
-              onChange={handleChange}
-              placeholder="Summani kiriting"
-              style={{ textAlign: 'center', marginLeft: 20 }}
-              required
-            />
-          </h2>
         </div>
+      )}
 
-        <div className="sixthDiv">
-          <h2>Qo'shimcha to'lov alohida xona uchun</h2>
-          <h2>
-            <input
-              name="amountroom"
-              style={{ width: 40 }}
-              value={form.amountroom}
-              onChange={handleChange}
-            />
-          </h2>
-          <h2>
-            <input
-              name="qoshimchatolov"
-              value={form.qoshimchatolov}
-              onChange={handleChange}
-              placeholder="Qo'shimcha to'lov"
-              style={{ textAlign: 'center' }}
-            />
-          </h2>
-        </div>
-
-        <div className="eightDiv">
-          <h2>Qabul qiluvchi kassir</h2>
-          <h2>
-            <select
-              name="kassir"
-              value={form.kassir}
-              onChange={handleChange}
-              required
-            >
-              <option value="Baxtiyor">Atamirzayev Baxtiyor</option>
-              <option value="Abdugani">Qahharov Abdugani</option>
-              <option value="Bositxon">Saydullayev Bositxon</option>
-            </select>
-          </h2>
-        </div>
-
-        <div className="ninethDiv">
-          <input
-            type="text"
-            name="dollar"
-            placeholder="Dollar kursi"
-            value={form.dollar}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="seventhDiv" style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1rem' }}>
-          <button
-            type="submit"
-            disabled={loading}
-            style={{ padding: '6px 16px', fontSize: 14, backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: 6 }}
-          >
-            {loading ? 'Yuklanmoqda...' : 'Saqlash'}
-          </button>
-
-          {showPrintButton && (
-            <button
-              type="button"
-              onClick={handlePrint}
-              style={{ padding: '6px 16px', fontSize: 14, backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: 6 }}
-            >
-              Chop etish
-            </button>
-          )}
-        </div>
-      </form>
-
-      <div className="footerButton">
-        <button className="back-button" onClick={() => navigate('/')}>Asosiy sahifaga qaytish</button>
-        <button className="back-button" onClick={() => navigate('/chekRoyxati')}>Cheklar ro'yxatini ko'rish</button>
+      <div style={{ position: 'absolute', left: '-9999px', top: 0 }}>
+        {selectedItem && (
+          <div ref={componentRef} className="containerKvitansiya">
+            <div className="firstDiv">
+              <h1>{formatDate(selectedItem.createdAt)}</h1>
+              <h1>Naqd pul haqida Kvitansiya</h1>
+              <h1 className='inputCircle'>№ {selectedItem.tartibraqam}</h1>
+            </div>
+            <div className="secondDiv">
+              <h2>Uchish sanasi</h2>
+              <h2 className='inputCircle'>{formatDate(selectedItem.sana)}</h2>
+              <h2>To'lov maqsadi</h2>
+              <h2>Umra hizmati</h2>
+            </div>
+            <div className="thridDiv">
+              <h2>Kim tomonidan to'lov qilindi</h2>
+              <h2 className='inputCircle'>{selectedItem.fullname}</h2>
+              <h2>Necha kishiga to'lov qilindi</h2>
+              <h3 className='inputCircle'>{selectedItem.amountpeople}</h3>
+            </div>
+            <div className="fourthDiv">
+              <h2>Pulni qabul qiluvchi subyekt</h2>
+              <h2>"Risola Travel Lux" MCHJ</h2>
+              <h2 className='inputCircle'>{selectedItem.phonenumber}</h2>
+            </div>
+            <div className="fivethDiv">
+              <div className="summaDiv">
+                <h2>So'z bilan yozilgan summa</h2>
+                <p>{selectedItem.sumInWords}</p>
+              </div>
+              <h2 className='inputCircle'>{selectedItem.location}</h2>
+              <h2 className='inputCircle'>{Number(selectedItem.summa || 0).toLocaleString()} so'm</h2>
+            </div>
+            <div className="sixthDiv">
+              <h2>Qo'shimcha to'lov alohida xona uchun</h2>
+              <h2 className='inputCircle'>{selectedItem.amountroom || '-'}</h2>
+              <h2 className='inputCircle'>{Number(selectedItem.qoshimchatolov || 0).toLocaleString()} so'm</h2>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
-export default Kvitansiya;
