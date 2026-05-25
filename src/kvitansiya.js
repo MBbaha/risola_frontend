@@ -109,7 +109,7 @@ function Kvitansiya() {
     qoshimchatolov: form.qoshimchatolov.replace(/\s/g, ''),
     dollar: form.dollar.replace(/\s/g, '')
   }
-)
+);
       if (res.data.success) {
         setSuccessMsg("✅ Kvitansiya muvaffaqiyatli saqlandi!");
         setErrorMsg('');
