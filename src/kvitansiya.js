@@ -35,14 +35,24 @@ function Kvitansiya() {
   const [loading, setLoading] = useState(false);
   const [showPrintButton, setShowPrintButton] = useState(false);
 
-  useEffect(() => {
-    const fetchRandomNumber = () => {
+ useEffect(() => {
+  const fetchLastNumber = async () => {
+    try {
+      const res = await axios.get(
+        'https://backendrisola-production.up.railway.app/api/userKvitansiya/lastNumber'
+      );
+      if (res.data.success) {
+        const formatted = String(res.data.nextNumber).padStart(3, '0');
+        setForm(prev => ({ ...prev, tartibraqam: formatted }));
+      }
+    } catch (err) {
+      // fallback: random
       const randomNum = Math.floor(Math.random() * 9999) + 1;
-      const formatted = randomNum.toString().padStart(3, '0');
-      setForm(prev => ({ ...prev, tartibraqam: formatted }));
-    };
-    fetchRandomNumber();
-  }, []);
+      setForm(prev => ({ ...prev, tartibraqam: String(randomNum).padStart(3, '0') }));
+    }
+  };
+  fetchLastNumber();
+}, []);
 
   const formatNumber = val => {
     const cleaned = val.replace(/\D/g, '');
