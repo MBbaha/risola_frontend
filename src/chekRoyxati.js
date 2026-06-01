@@ -5,6 +5,8 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import './chekRoyxati.css';
 
+const BASE_URL = 'https://backendrisola-production.up.railway.app';
+
 export default function ChekRoyxati() {
   const [cheklar, setCheklar] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,7 +40,6 @@ export default function ChekRoyxati() {
       let str = '';
       const hundred = Math.floor(n / 100);
       const rest = n % 100;
-
       if (hundred) str += ones[hundred] + ' yuz ';
       if (rest >= 10 && rest < 20) str += teens[rest - 10] + ' ';
       else {
@@ -52,7 +53,6 @@ export default function ChekRoyxati() {
 
     const parts = [];
     let i = 0;
-
     while (num > 0) {
       const chunk = num % 1000;
       if (chunk) {
@@ -62,16 +62,13 @@ export default function ChekRoyxati() {
       num = Math.floor(num / 1000);
       i++;
     }
-
     return parts.join(' ').trim() + ' so\'m';
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-       const res = await axios.get(
-  'https://backend-production.up.railway.app/api/userKvitansiya/getUsers'
-);
+        const res = await axios.get(`${BASE_URL}/api/userKvitansiya/getUsers`);
         if (res.data.success) {
           const enrichedData = res.data.data.map(item => ({
             ...item,
@@ -102,11 +99,8 @@ export default function ChekRoyxati() {
       alert("❌ Noto'g'ri kod!");
       return;
     }
-
     try {
-     await axios.delete(
-  `https://backend-production.up.railway.app/api/userKvitansiya/delete/${deleteId}`
-);
+      await axios.delete(`${BASE_URL}/api/userKvitansiya/delete/${deleteId}`);
       setCheklar(prev => prev.filter(item => item._id !== deleteId));
       alert("✅ Kvitansiya muvaffaqiyatli o'chirildi.");
     } catch (err) {
@@ -131,7 +125,6 @@ export default function ChekRoyxati() {
         const imgProps = pdf.getImageProperties(imgData);
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
         pdf.save(`kvitansiya_${selectedItem.tartibraqam || selectedItem._id}.pdf`);
       } catch (error) {
@@ -140,7 +133,6 @@ export default function ChekRoyxati() {
         setSelectedItem(null);
       }
     };
-
     generatePDF();
   }, [selectedItem]);
 
