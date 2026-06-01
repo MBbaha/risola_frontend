@@ -4,6 +4,8 @@ import axios from 'axios';
 import './App.css';
 import './kvitansiya.css';
 
+const BASE_URL = 'https://backendrisola-production.up.railway.app';
+
 function Kvitansiya() {
   const navigate = useNavigate();
 
@@ -25,6 +27,7 @@ function Kvitansiya() {
     amountroom: '',
     location: '',
     dollar: '',
+    kassir: 'Baxtiyor',
     isactive: true
   };
 
@@ -35,24 +38,22 @@ function Kvitansiya() {
   const [loading, setLoading] = useState(false);
   const [showPrintButton, setShowPrintButton] = useState(false);
 
- useEffect(() => {
   const fetchLastNumber = async () => {
     try {
-      const res = await axios.get(
-        'https://backendrisola-production.up.railway.app/api/userKvitansiya/lastNumber'
-      );
+      const res = await axios.get(`${BASE_URL}/api/userKvitansiya/lastNumber`);
       if (res.data.success) {
         const formatted = String(res.data.nextNumber).padStart(3, '0');
         setForm(prev => ({ ...prev, tartibraqam: formatted }));
       }
     } catch (err) {
-      // fallback: random
       const randomNum = Math.floor(Math.random() * 9999) + 1;
       setForm(prev => ({ ...prev, tartibraqam: String(randomNum).padStart(3, '0') }));
     }
   };
-  fetchLastNumber();
-}, []);
+
+  useEffect(() => {
+    fetchLastNumber();
+  }, []);
 
   const formatNumber = val => {
     const cleaned = val.replace(/\D/g, '');
@@ -112,7 +113,7 @@ function Kvitansiya() {
     setLoading(true);
     try {
       const res = await axios.post(
-        'https://backendrisola-production.up.railway.app/api/userKvitansiya/register',
+        `${BASE_URL}/api/userKvitansiya/register`,
         {
           ...form,
           summa: form.summa.replace(/\s/g, ''),
@@ -125,6 +126,17 @@ function Kvitansiya() {
         setErrorMsg('');
         setShowPrintButton(true);
         setTimeout(() => setSuccessMsg(''), 3000);
+
+        // Yangi tartib raqam olish
+        const nextRes = await axios.get(`${BASE_URL}/api/userKvitansiya/lastNumber`);
+        const newNum = nextRes.data.success
+          ? String(nextRes.data.nextNumber).padStart(3, '0')
+          : String(Math.floor(Math.random() * 9999) + 1).padStart(3, '0');
+
+        setForm({ ...initialForm, tartibraqam: newNum });
+        setSumInWords('');
+        setShowPrintButton(false);
+
       } else {
         throw new Error(res.data.message || 'Xatolik yuz berdi');
       }
