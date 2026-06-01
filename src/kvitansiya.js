@@ -32,6 +32,7 @@ function Kvitansiya() {
   };
 
   const [form, setForm] = useState(initialForm);
+  const [savedForm, setSavedForm] = useState(null); // ✅ saqlangan forma
   const [sumInWords, setSumInWords] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -42,12 +43,13 @@ function Kvitansiya() {
     try {
       const res = await axios.get(`${BASE_URL}/api/userKvitansiya/lastNumber`);
       if (res.data.success) {
-        const formatted = String(res.data.nextNumber).padStart(3, '0');
+        // ✅ Agar 10 dan kam bo'lsa 10 dan boshlaydi
+        const nextNum = Math.max(res.data.nextNumber, 10);
+        const formatted = String(nextNum).padStart(3, '0');
         setForm(prev => ({ ...prev, tartibraqam: formatted }));
       }
     } catch (err) {
-      const randomNum = Math.floor(Math.random() * 9999) + 1;
-      setForm(prev => ({ ...prev, tartibraqam: String(randomNum).padStart(3, '0') }));
+      setForm(prev => ({ ...prev, tartibraqam: '010' }));
     }
   };
 
@@ -124,18 +126,9 @@ function Kvitansiya() {
       if (res.data.success) {
         setSuccessMsg("✅ Kvitansiya muvaffaqiyatli saqlandi!");
         setErrorMsg('');
-        setShowPrintButton(true);
+        setSavedForm({ ...form }); // ✅ chop etish uchun saqlab qo'yamiz
+        setShowPrintButton(true);  // ✅ chop etish tugmasini ko'rsatamiz
         setTimeout(() => setSuccessMsg(''), 3000);
-
-        // Yangi tartib raqam olish
-        const nextRes = await axios.get(`${BASE_URL}/api/userKvitansiya/lastNumber`);
-        const newNum = nextRes.data.success
-          ? String(nextRes.data.nextNumber).padStart(3, '0')
-          : String(Math.floor(Math.random() * 9999) + 1).padStart(3, '0');
-
-        setForm({ ...initialForm, tartibraqam: newNum });
-        setSumInWords('');
-        setShowPrintButton(false);
 
       } else {
         throw new Error(res.data.message || 'Xatolik yuz berdi');
@@ -147,6 +140,19 @@ function Kvitansiya() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // ✅ Yangi kvitansiya tugmasi
+  const handleNewKvitansiya = async () => {
+    const nextRes = await axios.get(`${BASE_URL}/api/userKvitansiya/lastNumber`);
+    const nextNum = nextRes.data.success
+      ? Math.max(nextRes.data.nextNumber, 10)
+      : 10;
+    const newNum = String(nextNum).padStart(3, '0');
+    setForm({ ...initialForm, tartibraqam: newNum });
+    setSumInWords('');
+    setShowPrintButton(false);
+    setSavedForm(null);
   };
 
   const handlePrint = () => {
@@ -284,22 +290,33 @@ function Kvitansiya() {
         </div>
 
         <div className="seventhDiv" style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1rem' }}>
-          <button
-            type="submit"
-            disabled={loading}
-            style={{ padding: '6px 16px', fontSize: 14, backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: 6 }}
-          >
-            {loading ? 'Yuklanmoqda...' : 'Saqlash'}
-          </button>
+          {!showPrintButton && (
+            <button
+              type="submit"
+              disabled={loading}
+              style={{ padding: '6px 16px', fontSize: 14, backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: 6 }}
+            >
+              {loading ? 'Yuklanmoqda...' : 'Saqlash'}
+            </button>
+          )}
 
           {showPrintButton && (
-            <button
-              type="button"
-              onClick={handlePrint}
-              style={{ padding: '6px 16px', fontSize: 14, backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: 6 }}
-            >
-              Chop etish
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={handlePrint}
+                style={{ padding: '6px 16px', fontSize: 14, backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: 6 }}
+              >
+                Chop etish
+              </button>
+              <button
+                type="button"
+                onClick={handleNewKvitansiya}
+                style={{ padding: '6px 16px', fontSize: 14, backgroundColor: '#ff9800', color: '#fff', border: 'none', borderRadius: 6 }}
+              >
+                Yangi kvitansiya
+              </button>
+            </>
           )}
         </div>
       </form>
