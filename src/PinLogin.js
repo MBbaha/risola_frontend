@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './PinLogin.css';
 
-const CORRECT_PIN = "123456"; // ← o'z PIN kodingizni yozing
+const CORRECT_PIN = "606264"; // ← o'z PIN kodingizni yozing
 
 const KEYS = [
   { d: '1', s: '' },    { d: '2', s: 'ABC' }, { d: '3', s: 'DEF' },
