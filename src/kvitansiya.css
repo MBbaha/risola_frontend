@@ -547,51 +547,85 @@
   cursor: pointer;
 }
 .kv-kurs-refresh:hover { background: var(--kv-tint); }
-.kv-kurs-opts {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
+.kv-kurs-value {
   margin-top: 10px;
+  padding: 8px 14px;
+  border: 1.5px solid #9fd3b4;
+  border-radius: 8px;
+  background: #f2fbf5;
+  font-size: 14px;
+  color: var(--kv-ink);
 }
-.kv-opt {
+.kv-kurs-value b { font-family: var(--kv-mono); font-size: 20px; color: var(--kv-navy); margin: 0 4px; }
+.kv-kurs-box {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 8px 14px;
   border: 1.5px solid #dbe1ec;
   border-radius: 8px;
-  font-size: 12.5px;
-  cursor: pointer;
+  font-size: 14px;
+  cursor: text;
 }
-.kv-opt span { flex: 1; color: var(--kv-muted); }
-.kv-opt b { font-family: var(--kv-mono); color: var(--kv-ink); }
-.kv-opt.is-active { border-color: var(--kv-navy); background: var(--kv-tint); }
-.kv-opt.is-active span { color: var(--kv-navy); font-weight: 600; }
-.kv-opt.is-off { opacity: 0.45; cursor: not-allowed; }
-.kv-opt-input {
-  width: 96px;
+.kv-kurs-box input {
+  width: 150px;
   border: 0;
-  border-bottom: 1px solid var(--kv-line);
+  border-bottom: 1.5px solid var(--kv-line);
   background: transparent;
-  font-family: var(--kv-mono);
-  font-weight: 700;
-  font-size: 13px;
   outline: 0;
+  font-family: var(--kv-mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--kv-navy);
   text-align: right;
+  padding: 2px 4px;
 }
+.kv-kurs-box em { margin-left: auto; font-style: normal; font-size: 12.5px; }
+.kv-kurs-box.is-ok { border-color: #9fd3b4; background: #f2fbf5; }
+.kv-kurs-box.is-ok em { color: #1f7a4d; }
+.kv-kurs-box.is-empty { border-color: #e6c35c; background: #fff8e1; }
+.kv-kurs-box.is-empty em { color: #8a5a00; font-weight: 600; }
 .kv-kurs-hint { margin-top: 8px; font-size: 12px; color: var(--kv-muted); }
-.kv-kurs-hint a { color: var(--kv-navy); }
-.kv-kurs-warn {
-  margin-top: 10px;
-  padding: 7px 10px;
-  border-radius: 6px;
-  background: #fff6d8;
-  color: #7a5200;
-  font-size: 12.5px;
-}
 
 /* ---------- Tugmalar va xabarlar ---------- */
-.kv-actions { display: flex; justify-content: center; gap: 12px; margin-top: 16px; }
+.kv-actions { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 16px; }
+
+/* "Ofis uchun" tugmasi (belgilansa — Chek ID kiritiladi va chekda chiqadi) */
+.kv-ofis {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 18px;
+  border: 1.5px solid #c9d1e0;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--kv-navy);
+  cursor: pointer;
+  user-select: none;
+}
+.kv-ofis input { position: absolute; opacity: 0; width: 0; height: 0; }
+.kv-ofis-dot {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--kv-navy);
+  border-radius: 50%;
+}
+.kv-ofis.is-on { border-color: var(--kv-navy); background: var(--kv-tint); }
+.kv-ofis.is-on .kv-ofis-dot::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--kv-navy);
+}
+.kv-ofis:focus-within { box-shadow: 0 0 0 3px rgba(29, 58, 122, 0.18); }
+.kv-ofis.is-locked { opacity: 0.6; cursor: default; }
 .kv-actions button {
   padding: 10px 28px;
   font-size: 15px;
