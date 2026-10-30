@@ -1,184 +1,737 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
+/* ===== Risola Travel Lux — kvitansiya (bank uslubi) ===== */
+/* Har qanday kompyuterda bir xil, tiniq shrift bo'lishi uchun */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap');
+
+:root {
+  --kv-navy: #13295c;
+  --kv-navy-2: #1d3a7a;
+  --kv-red: #d7202b;
+  --kv-ink: #161b26;
+  --kv-muted: #6a7488;
+  --kv-line: #b9c3d6;
+  --kv-tint: #eef2f9;
+  --kv-paper: #fbfcff;
+  --kv-mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.kv-page {
+  padding: 24px 16px 32px;
+  background: #eceff5;
+  min-height: 100vh;
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  color: var(--kv-ink);
+  overflow-x: auto;
+}
+
+.kv-fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.kv-fieldset:disabled input,
+.kv-fieldset:disabled select {
+  color: inherit;
+  -webkit-text-fill-color: currentColor;
+  opacity: 1;
+  cursor: default;
+}
+
+.kv-mono { font-family: var(--kv-mono); }
+.kv-red { color: var(--kv-red); }
+.kv-lbl {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--kv-muted);
+}
+.kv-only-print { display: none !important; }
+
+/* ---------- Varaq ---------- */
+.containerKvitansiya.kv-sheet {
+  position: relative;
+  display: flex;
+  width: 1000px;
+  margin: 0 auto;
+  background: var(--kv-paper);
+  border: 1.5px solid var(--kv-navy);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(19, 41, 92, 0.14);
+  text-align: left;
+}
+
+.kv-guilloche {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+.kv-guilloche path {
+  fill: none;
+  stroke: var(--kv-navy);
+  stroke-opacity: 0.075;
+  stroke-width: 0.7;
+  vector-effect: non-scaling-stroke;
+}
+.kv-rosette {
+  position: absolute;
+  right: 150px;
+  top: 50%;
+  width: 300px;
+  height: 300px;
+  transform: translateY(-46%);
+  z-index: 0;
+  pointer-events: none;
+}
+.kv-rosette path {
+  fill: none;
+  stroke: var(--kv-navy);
+  stroke-opacity: 0.085;
+  stroke-width: 0.6;
+}
+.kv-talon > *:not(svg),
+.kv-main > *:not(svg) { position: relative; z-index: 1; }
+
+.kv-draft {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: rgba(215, 32, 43, 0.15);
+  transform: rotate(-10deg);
+  pointer-events: none;
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* ---------- Talon ---------- */
+.kv-talon {
+  position: relative;
+  width: 232px;
+  flex: 0 0 232px;
+  padding: 16px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  background: #f7f9fd;
+}
+.kv-talon-org {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--kv-navy);
+}
+.kv-talon-title {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--kv-ink);
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid var(--kv-navy);
+}
+.kv-talon-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 9px;
+  font-size: 12px;
+}
+.kv-talon-row .kv-lbl { display: inline; }
+.kv-talon-row b { font-size: 16px; }
+.kv-talon-id {
+  margin-top: 8px;
+  padding: 5px 8px;
+  border: 1px dashed var(--kv-navy);
+  background: var(--kv-tint);
+  border-radius: 3px;
+}
+.kv-talon-id b { font-size: 13px; color: var(--kv-navy); letter-spacing: 0.06em; word-break: break-all; }
+.kv-tf { margin-top: 8px; }
+.kv-tv {
+  min-height: 18px;
+  padding: 1px 0 2px;
+  border-bottom: 1px solid var(--kv-line);
+  font-size: 12px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kv-talon-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px; }
+.kv-talon-sum {
+  margin-top: 10px;
+  padding: 6px 9px;
+  background: #fff;
+  border: 1.5px solid var(--kv-navy);
+  border-radius: 4px;
+}
+.kv-talon-sum b { display: block; font-size: 15px; color: var(--kv-navy); }
+.kv-talon-sum small { display: block; font-size: 11px; color: var(--kv-muted); margin-top: 1px; }
+.kv-talon-sign { margin-top: auto; padding-top: 10px; }
+.kv-talon-foot {
+  margin-top: 10px;
+  padding-top: 6px;
+  border-top: 1px solid var(--kv-line);
+  text-align: center;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--kv-muted);
+}
+
+/* ---------- Qirqish chizig'i ---------- */
+.kv-cut {
+  position: relative;
+  flex: 0 0 18px;
+  background:
+    linear-gradient(var(--kv-navy) 50%, transparent 0) center top / 1.5px 10px repeat-y;
+  opacity: 0.55;
+}
+.kv-cut span {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(90deg);
+  font-size: 15px;
+  background: var(--kv-paper);
+  color: var(--kv-navy);
+  line-height: 1;
+}
+
+/* ---------- Asosiy kvitansiya ---------- */
+.kv-main {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  padding: 16px 22px 10px;
+}
+.kv-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+.kv-brand { display: flex; align-items: center; gap: 14px; }
+.kv-logo { height: 40px; width: auto; display: block; }
+.kv-brand > div { padding-left: 14px; border-left: 1px solid var(--kv-line); }
+.kv-org { font-size: 15px; font-weight: 800; color: var(--kv-navy); letter-spacing: 0.01em; white-space: nowrap; }
+.kv-org-sub { font-size: 11px; color: var(--kv-muted); margin-top: 2px; }
+
+.kv-ids { text-align: right; }
+.kv-doc {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--kv-navy);
+  margin-right: -0.2em;
+}
+.kv-id-row {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+.kv-no {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1.5px solid var(--kv-red);
+  border-radius: 3px;
+  background: #fff;
+}
+.kv-no span { font-size: 11px; color: var(--kv-muted); }
+.kv-no b { font-size: 19px; color: var(--kv-red); letter-spacing: 0.04em; }
+
+.kv-chekid {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 3px 10px 4px;
+  border: 1.5px solid var(--kv-navy);
+  border-radius: 3px;
+  background: var(--kv-tint);
+  cursor: text;
+}
+.kv-chekid span {
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--kv-navy);
+}
+.kv-chekid input {
+  width: 172px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: var(--kv-mono);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--kv-navy);
   padding: 0;
 }
+.kv-chekid:has(input:placeholder-shown) { background: #fff6d8; border-color: #c99a00; }
+.kv-chekid:focus-within { box-shadow: 0 0 0 3px rgba(29, 58, 122, 0.18); }
 
-.containerKvitansiya{
-    width: 700px;
-    height: auto;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-    /* display: flex; */
-    font-size: 8px;
-    border: 1px solid black;
-    margin: 0 auto ;
+.kv-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 6px 12px;
+  background: var(--kv-navy);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
-
-
-/* firstDiv */
-.firstDiv{
-     display: flex;
-    justify-content: space-between;
-    padding-top: 10px;
-    margin: 0px 30px 0px 30px;
-}
-.firstDiv h1{
-    font-size: 15px;
-}
-.firstDiv input{
-width: 30px;
+.kv-microprint {
+  font-size: 4.5px;
+  line-height: 1;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  overflow: hidden;
+  color: var(--kv-navy);
+  opacity: 0.7;
+  margin: 2px 0 10px;
 }
 
+.kv-body { display: grid; grid-template-columns: 1fr 112px; gap: 18px; }
+.kv-row { display: grid; gap: 16px; margin-bottom: 9px; }
+.kv-r1 { grid-template-columns: 2fr 1fr; }
+.kv-r2 { grid-template-columns: 1.5fr 1fr 0.8fr; }
+.kv-f { display: flex; flex-direction: column; min-width: 0; }
 
-
-
-.secondDiv{
-     display: flex;
-    justify-content: space-between;
-    padding-top: 10px;
-    margin: 0px 30px 0px 30px;
-}
-
-/* thridDiv */
-.thridDiv{
-     display: flex;
-    justify-content: space-between;
-    padding-top: 10px;
-    margin: 0px 30px 0px 30px;
-}
-.thridDiv h3 input{
-    width: 40px;
-}
-.fourthDiv{
-     display: flex;
-    justify-content: space-between;
-    padding-top: 10px;
-    margin: 0px 30px 0px 30px;
-}
-.fivethDiv{
-     display: flex;
-    justify-content: space-between;
-    padding-top: 10px;
-    margin: 0px 30px 0px 30px;  
-}
-.sixthDiv{
-     display: flex;
-    justify-content: space-between;
-    padding-top: 10px;
-    margin: 0px 30px 0px 30px;
-}
-.seventhDiv button {
-  padding: 8px 20px; /* ✅ Kichikroq o‘lcham */
-  background: linear-gradient(135deg, #1e90ff, #007bff);
-  color: white;
-  font-size: 16px; /* ✅ Matn biroz kichik */
+.kv-main input,
+.kv-main select {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--kv-line);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.65);
+  outline: 0;
+  font: inherit;
+  font-size: 14px;
   font-weight: 600;
-  border: none;
+  color: var(--kv-ink);
+  padding: 3px 2px 2px;
+  text-align: left;
+}
+.kv-main input:focus,
+.kv-main select:focus { border-bottom-color: var(--kv-navy); background: #fffbe8; }
+.kv-main input::placeholder { color: #a9b2c3; font-weight: 500; }
+.kv-pv {
+  display: block;
+  min-height: 24px;
+  padding: 3px 2px 2px;
+  border-bottom: 1px solid var(--kv-line);
+  font-size: 14px;
+  font-weight: 600;
+}
+.kv-static { color: var(--kv-ink); }
+
+.kv-qr {
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid var(--kv-line);
+  border-radius: 4px;
+}
+.kv-qr svg { display: block; }
+.kv-qr span {
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--kv-muted);
+}
+
+/* ---------- Summa bloki ---------- */
+.kv-amount {
+  display: grid;
+  grid-template-columns: 92px 1fr 230px;
+  align-items: stretch;
+  margin-top: 4px;
+  background: #fff;
+  border: 2px solid var(--kv-navy);
+  border-radius: 4px;
+}
+.kv-amount-lbl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1.5px solid var(--kv-navy);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--kv-navy);
+}
+.kv-amount-uzs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 14px;
+}
+.kv-amount-uzs input,
+.kv-amount-uzs .kv-only-print {
+  flex: 1;
+  border: 0 !important;
+  background: transparent !important;
+  font-family: var(--kv-mono) !important;
+  font-size: 27px !important;
+  font-weight: 700 !important;
+  color: var(--kv-navy) !important;
+  letter-spacing: 0.02em;
+  padding: 0 !important;
+}
+.kv-amount-uzs em {
+  font-style: normal;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--kv-navy);
+}
+.kv-amount-usd {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4px 12px;
+  border-left: 1.5px dashed var(--kv-line);
+  background: var(--kv-tint);
+}
+.kv-usd-input { display: flex; align-items: baseline; gap: 4px; }
+.kv-usd-input i {
+  font-style: normal;
+  font-family: var(--kv-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f7a4d;
+}
+.kv-usd-input input {
+  border: 0 !important;
+  background: transparent !important;
+  font-family: var(--kv-mono) !important;
+  font-size: 19px !important;
+  font-weight: 700 !important;
+  color: #1f7a4d !important;
+  padding: 0 !important;
+}
+.kv-staff-tag {
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 99px;
+  background: #fff1d6;
+  color: #8a5a00;
+  font-style: normal;
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+.kv-rate-line {
+  margin-top: 3px;
+  text-align: right;
+  font-size: 10.5px;
+  color: var(--kv-muted);
+}
+.kv-rate-line b { color: var(--kv-ink); font-family: var(--kv-mono); }
+
+.kv-words {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 4px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--kv-line);
+  font-size: 13px;
+}
+.kv-words .kv-lbl { flex: none; }
+.kv-words b { display: inline-block; }
+.kv-words b::first-letter { text-transform: uppercase; }
+
+/* ---------- Imzolar ---------- */
+.kv-sign {
+  display: grid;
+  grid-template-columns: 1fr 1fr 92px;
+  gap: 26px;
+  align-items: end;
+  margin-top: 12px;
+}
+.kv-sign-col .kv-pv { border-bottom: 0; }
+.kv-sign-col select { border-bottom: 0; }
+.kv-sign-line {
+  margin-top: 16px;
+  border-top: 1px solid var(--kv-ink);
+  padding-top: 2px;
+  text-align: center;
+  font-size: 9px;
+  color: var(--kv-muted);
+}
+.kv-stamp {
+  width: 88px;
+  height: 88px;
+  border: 1.5px dashed rgba(19, 41, 92, 0.45);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(19, 41, 92, 0.5);
+  justify-self: end;
+}
+
+.kv-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 5px;
+  border-top: 1px solid var(--kv-line);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--kv-muted);
+}
+.kv-micr {
+  font-family: var(--kv-mono);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--kv-navy);
+  text-transform: none;
+}
+
+/* ---------- Dollar kursi paneli ---------- */
+.kv-kurs {
+  width: 1000px;
+  max-width: 100%;
+  margin: 14px auto 0;
+  padding: 12px 16px 10px;
+  background: #fff;
+  border: 1px solid #d6dce8;
+  border-radius: 10px;
+  text-align: left;
+}
+.kv-kurs-head { display: flex; align-items: center; gap: 12px; }
+.kv-kurs-head b { font-size: 14px; color: var(--kv-navy); }
+.kv-kurs-status {
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 99px;
+  background: var(--kv-tint);
+  color: var(--kv-muted);
+}
+.kv-kurs-status.is-ok { background: #e6f4ec; color: #1f7a4d; }
+.kv-kurs-status.is-error { background: #fdecec; color: #a12323; }
+.kv-kurs-refresh {
+  margin-left: auto;
+  border: 1px solid #c9d1e0;
+  background: #fff;
   border-radius: 6px;
-  margin: 20px 0px 20px 0px;
+  padding: 4px 12px;
+  font-size: 13px;
+  cursor: pointer;
 }
+.kv-kurs-refresh:hover { background: var(--kv-tint); }
+.kv-kurs-opts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+.kv-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1.5px solid #dbe1ec;
+  border-radius: 8px;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.kv-opt span { flex: 1; color: var(--kv-muted); }
+.kv-opt b { font-family: var(--kv-mono); color: var(--kv-ink); }
+.kv-opt.is-active { border-color: var(--kv-navy); background: var(--kv-tint); }
+.kv-opt.is-active span { color: var(--kv-navy); font-weight: 600; }
+.kv-opt.is-off { opacity: 0.45; cursor: not-allowed; }
+.kv-opt-input {
+  width: 96px;
+  border: 0;
+  border-bottom: 1px solid var(--kv-line);
+  background: transparent;
+  font-family: var(--kv-mono);
+  font-weight: 700;
+  font-size: 13px;
+  outline: 0;
+  text-align: right;
+}
+.kv-kurs-hint { margin-top: 8px; font-size: 12px; color: var(--kv-muted); }
 
-.seventhDiv button:hover {
-  background: linear-gradient(135deg, #007bff, #0056b3); /* hover effekti */
-  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
-  transform: translateY(-2px); /* ozgina ko‘tariladi */
+/* ---------- Tugmalar va xabarlar ---------- */
+.kv-actions { display: flex; justify-content: center; gap: 12px; margin-top: 16px; }
+.kv-actions button {
+  padding: 10px 28px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
 }
+.btn-save { background: #1f9d55; }
+.btn-print { background: var(--kv-navy); }
+.btn-new { background: #fff; color: var(--kv-navy) !important; border: 1.5px solid var(--kv-navy) !important; }
+.kv-actions button:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(19, 41, 92, 0.25); }
+.kv-actions button:disabled { opacity: 0.6; cursor: wait; }
 
-
-input{
-    outline: none;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: white;
-    color: black;
-    text-align: center;
-}
-
-.eightDiv{
-     display: flex;
-    justify-content: space-between;
-    padding-top: 5px;
-    margin: 0px 30px 0px 30px;
-
-}
-
-select{
-   outline: none;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: white;
-    color: black;
-    text-align: center;
-    
-    /* height: 20px; */
-}
-.summaDiv{
-    text-align: left;
-}
-.summaDiv p{
-    font-size: 13px;
-    padding-left: 5px;
-}
+.footerButton { display: flex; justify-content: center; gap: 12px; margin-top: 18px; }
 
 .alert {
   padding: 10px 20px;
-  margin-bottom: 15px;
-  border-radius: 5px;
-  font-size: 16px;
+  margin: 0 auto 14px;
+  border-radius: 6px;
+  font-size: 15px;
   font-weight: 500;
   width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  animation: fadeIn 0.4s ease-in;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  animation: kvFade 0.35s ease-out;
 }
+.alert.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.alert.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+@keyframes kvFade { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 
-.alert.success {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.alert.error {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.footerButton{
-    display: flex;
-    margin: 0px 30px 0px 30px;
-  
-}
+/* ===================== PRINT ===================== */
+/* Albom (landscape) A4: chek kichraytirilmasdan 100% o'lchamda chiqadi */
+@page { size: A4 landscape; margin: 8mm; }
 
 @media print {
-  body * {
-    visibility: hidden;
-  }
-   .ninethDiv {
-    display: none !important;
+  /* Qora-oq printerda ham harflar tiniq chiqishi uchun hamma rang sof qora:
+     rangli matn qora-oq printerda nuqtali kulrang bo'lib, xira chiqadi */
+  :root {
+    --kv-navy: #000;
+    --kv-navy-2: #000;
+    --kv-red: #000;
+    --kv-ink: #000;
+    --kv-muted: #1a1a1a;
+    --kv-line: #333;
+    --kv-tint: #fff;
+    --kv-paper: #fff;
   }
 
-  .containerKvitansiya, .containerKvitansiya * {
-    visibility: visible;
-  }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
-  .containerKvitansiya {
+  body * { visibility: hidden; }
+  .containerKvitansiya,
+  .containerKvitansiya * { visibility: visible; }
+
+  .containerKvitansiya.kv-sheet {
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
+    margin: 0;
+    box-shadow: none;
+    border: 2px solid #000;
+    background: #fff;
   }
 
+  /* --- matn: sof qora, qalinroq --- */
+  .kv-sheet,
+  .kv-sheet * {
+    color: #000 !important;
+    -webkit-text-fill-color: #000 !important;
+    text-shadow: none !important;
+    opacity: 1;
+  }
+  .kv-sheet .kv-lbl {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .kv-sheet input,
+  .kv-sheet .kv-pv,
+  .kv-sheet .kv-tv,
+  .kv-sheet .kv-words b { font-weight: 700 !important; }
+  .kv-sheet .kv-tv { font-size: 12.5px; }
+  .kv-sheet .kv-org-sub,
+  .kv-sheet .kv-rate-line,
+  .kv-sheet .kv-foot,
+  .kv-sheet .kv-sign-line { font-weight: 600; }
+  .kv-sheet .kv-rate-line { font-size: 11px; }
+  .kv-sheet .kv-mono,
+  .kv-sheet .kv-micr,
+  .kv-sheet .kv-chekid input,
+  .kv-sheet .kv-amount-uzs .kv-only-print,
+  .kv-sheet .kv-usd-input input { font-weight: 800 !important; }
+
+  /* --- fon ranglari olib tashlanadi (matn ostida nuqtali fon qolmasin) --- */
+  .kv-talon,
+  .kv-talon-id,
+  .kv-talon-sum,
+  .kv-no,
+  .kv-chekid,
+  .kv-chekid:has(input:placeholder-shown),
+  .kv-qr,
+  .kv-amount,
+  .kv-amount-usd { background: #fff !important; }
+  .kv-chekid,
+  .kv-chekid:has(input:placeholder-shown) { border: 2px solid #000; }
+  .kv-no { border: 2px solid #000; }
+  .kv-amount { border-width: 2.5px; }
+
+  /* sarlavha chizig'i: to'q fon o'rniga qalin qora chiziqlar (printer
+     sozlamasidan qat'i nazar har doim o'qiladi) */
+  .kv-sheet .kv-bar {
+    background: #fff !important;
+    border-top: 2.5px solid #000;
+    border-bottom: 2.5px solid #000;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  /* himoya foni juda och — matnga xalaqit bermaydi */
+  .kv-guilloche path { stroke-opacity: 0.04; }
+  .kv-rosette path { stroke-opacity: 0.05; }
+  .kv-cut { opacity: 0.8; }
+
+  /* muhr o'rni — och qoladi, muhr ustidan bosiladi */
+  .kv-sheet .kv-stamp,
+  .kv-sheet .kv-stamp * {
+    color: #888 !important;
+    -webkit-text-fill-color: #888 !important;
+    border-color: #888;
+  }
+
+  .kv-page { background: #fff; padding: 0; }
+  .no-print,
   .footerButton,
   .back-button,
-  button {
-    display: none !important;
-  }
+  button { display: none !important; }
+
+  .kv-only-screen { display: none !important; }
+  .kv-only-print { display: block !important; }
+
+  /* Dollar va kurs mijoz chekida chiqmaydi (talonda — kassada qoladi) */
+  .kv-staff-only { display: none !important; }
+  .kv-amount { grid-template-columns: 92px 1fr; }
+  .kv-amount-uzs { justify-content: flex-end; }
+  .kv-amount-uzs .kv-only-print { flex: 0 1 auto; text-align: right; }
+
+  .kv-main input,
+  .kv-main select { background: transparent !important; }
+  .kv-main input::placeholder { color: transparent; -webkit-text-fill-color: transparent; }
 }
