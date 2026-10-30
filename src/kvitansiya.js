@@ -18,7 +18,20 @@ const KURS_NOMI = {
   sell: 'Kapitalbank (sotish)',
   buy: 'Kapitalbank (sotib olish)',
   cb: 'Markaziy bank',
+  xalqaro: 'Xalqaro kurs',
   manual: "Qo'lda kiritilgan",
+};
+
+// Qo'lda kiritilgan kurs shu kompyuterda kun oxirigacha eslab qolinadi
+const QOLDA_KEY = 'kv-qolda-kurs';
+const qoldaOqish = sana => {
+  try {
+    const s = JSON.parse(localStorage.getItem(QOLDA_KEY) || 'null');
+    return s && s.sana === sana ? s.kurs : '';
+  } catch { return ''; }
+};
+const qoldaYozish = (sana, kurs) => {
+  try { localStorage.setItem(QOLDA_KEY, JSON.stringify({ sana, kurs })); } catch { /* e'tiborsiz */ }
 };
 
 const MONTHS = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"];
@@ -144,6 +157,8 @@ function Kvitansiya() {
 
   useEffect(() => {
     setForm(prev => ({ ...prev, tartibraqam: newNumber() }));
+    const bugungi = qoldaOqish(shortDate);          // bugun qo'lda kiritilgan kurs bo'lsa
+    if (bugungi) { setQoldaKurs(bugungi); setKursTuri('manual'); }
     fetchKurs(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -151,11 +166,13 @@ function Kvitansiya() {
   const fetchKurs = async (yangi) => {
     setKursHolat('loading');
     try {
-      const { data } = await axios.get(`${API}/api/kurs${yangi ? '?yangi=1' : ''}`, { timeout: 15000 });
+      const { data } = await axios.get(`${API}/api/kurs${yangi ? '?yangi=1' : ''}`, { timeout: 30000 });
       if (!data.ok) throw new Error(data.message);
       setKursData(data);
       setKursHolat('ok');
-      setKursTuri(t => (t === 'manual' ? t : !data.kapitalbank ? 'cb' : t));
+      // tanlangan kurs mavjud bo'lmasa — eng yaxshi mavjudiga o'tadi
+      const bor = t => (t === 'sell' || t === 'buy' ? !!data.kapitalbank : t === 'cb' ? !!data.cb : t === 'xalqaro' ? !!data.xalqaro : true);
+      setKursTuri(t => (t === 'manual' || bor(t) ? t : data.kapitalbank ? 'sell' : data.cb ? 'cb' : 'xalqaro'));
     } catch (e) {
       setKursHolat('error');
       setKursTuri(t => (t === 'manual' ? t : kursData ? t : 'manual'));
@@ -167,11 +184,15 @@ function Kvitansiya() {
     if (type === 'sell') return kursData.kapitalbank?.sell || 0;
     if (type === 'buy') return kursData.kapitalbank?.buy || 0;
     if (type === 'cb') return kursData.cb || 0;
+    if (type === 'xalqaro') return kursData.xalqaro || 0;
     return 0;
   };
 
   const rate = kursTuri === 'manual' ? parseDec(qoldaKurs) : kursQiymat(kursTuri);
-  const kursSana = kursTuri === 'cb' ? (kursData?.cbSana || shortDate) : shortDate;
+  const kursSana =
+    kursTuri === 'cb' ? (kursData?.cbSana || shortDate)
+    : kursTuri === 'xalqaro' ? (kursData?.xalqaroSana || shortDate)
+    : shortDate;
   const kursManba = KURS_NOMI[kursTuri];
 
   // kurs o'zgarsa — oxirgi yozilgan qiymatdan qayta hisoblash
@@ -361,7 +382,7 @@ function Kvitansiya() {
               </header>
 
               <div className="kv-bar">
-                <span>Naqd pul qabul qilinganligi to'g'risida</span>
+                <span className="kv-bar-title">Naqd pul qabul qilinganligi to'g'risida</span>
                 <span>Sana: {shortDate} · {timeNow}</span>
               </div>
               <div className="kv-microprint" aria-hidden="true">
@@ -500,11 +521,11 @@ function Kvitansiya() {
             </div>
 
             <div className="kv-kurs-opts">
-              {['sell', 'buy', 'cb'].map(t => {
+              {['sell', 'buy', 'cb', 'xalqaro'].map(t => {
                 const v = kursQiymat(t);
                 return (
                   <label key={t} className={`kv-opt ${kursTuri === t ? 'is-active' : ''} ${!v ? 'is-off' : ''}`}>
-                    <input type="radio" name="kursTuri" value={t} checked={kursTuri === t} disabled={!v} onChange={() => setKursTuri(t)} />
+                    <input type="radio" name="kursTuri" value={t} checked={kursTuri === t} disabled={!v} onChange={() => { setKursTuri(t); qoldaYozish('', ''); }} />
                     <span>{KURS_NOMI[t]}</span>
                     <b>{v ? fmtDec(v) : '—'}</b>
                   </label>
@@ -516,14 +537,26 @@ function Kvitansiya() {
                 <input
                   className="kv-opt-input"
                   value={kursTuri === 'manual' ? qoldaKurs : ''}
-                  onChange={e => { setKursTuri('manual'); setQoldaKurs(cleanDecInput(e.target.value)); }}
+                  onChange={e => {
+                    const v = cleanDecInput(e.target.value);
+                    setKursTuri('manual');
+                    setQoldaKurs(v);
+                    qoldaYozish(shortDate, v);
+                  }}
                   placeholder="12 100.00"
                   inputMode="decimal"
                 />
               </label>
             </div>
+            {kursHolat !== 'loading' && !kursData?.kapitalbank && (
+              <p className="kv-kurs-warn">
+                Kapitalbank sayti kursni serverga bermayapti. Bank kursini Kapitalbank ilovasidan ko'rib
+                «Qo'lda» katagiga yozsangiz, shu kompyuterda bugun kun bo'yi eslab qolinadi.
+              </p>
+            )}
             <p className="kv-kurs-hint">
               So'mda summa yozsangiz — dollari, dollar yozsangiz — so'mi avtomatik hisoblanadi.
+              {kursData?.xalqaro && <> Xalqaro kurs manbasi: <a href="https://www.exchangerate-api.com" target="_blank" rel="noreferrer">ExchangeRate-API</a>.</>}
             </p>
           </div>
         </fieldset>
