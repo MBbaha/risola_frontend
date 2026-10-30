@@ -14,12 +14,29 @@ const KASSIRLAR = {
   Bositxon: 'Saydullayev Bositxon',
 };
 
-const KURS_NOMI = {
-  sell: 'Kapitalbank (sotish)',
-  buy: 'Kapitalbank (sotib olish)',
-  cb: 'Markaziy bank',
-  xalqaro: 'Xalqaro kurs',
-  manual: "Qo'lda kiritilgan",
+/* ---------- Dollar kursi ----------
+   Tartib: 1) Kapitalbank sotish kursi (server orqali)
+           2) Markaziy bank kursi (server orqali)
+           3) Markaziy bank kursi — kassirning brauzeridan to'g'ridan-to'g'ri
+              (cbu.uz chet eldagi serverlarga javob bermaydi, O'zbekistondan esa ochiladi)
+           4) hech biri bo'lmasa — qo'lda kiritiladi */
+const CBU_URL = 'https://cbu.uz/uz/arkhiv-kursov-valyut/json/USD/';
+const kursTogri = n => Number.isFinite(n) && n > 5000 && n < 50000;
+
+const cbuBrauzerdan = async () => {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 10000);
+  try {
+    const res = await fetch(CBU_URL, { signal: ctrl.signal });
+    const arr = await res.json();
+    const usd = Array.isArray(arr) ? arr.find(r => r.Ccy === 'USD') : null;
+    const rate = usd ? parseFloat(String(usd.Rate).replace(',', '.')) : NaN;
+    return kursTogri(rate) ? { rate, sana: usd.Date || null } : null;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
 };
 
 // Qo'lda kiritilgan kurs shu kompyuterda kun oxirigacha eslab qolinadi
@@ -148,52 +165,62 @@ function Kvitansiya() {
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  /* ----- "Ofis uchun": belgilansa Chek ID kiritiladi va chekka chiqadi ----- */
+  const [ofis, setOfis] = useState(false);
+
   /* ----- dollar kursi ----- */
-  const [kursData, setKursData] = useState(null);
-  const [kursHolat, setKursHolat] = useState('loading'); // loading | ok | error
-  const [kursTuri, setKursTuri] = useState('sell');      // sell | buy | cb | manual
+  const [autoKurs, setAutoKurs] = useState(null);         // { rate, manba, sana }
+  const [kursHolat, setKursHolat] = useState('loading');  // loading | ok | error
   const [qoldaKurs, setQoldaKurs] = useState('');
-  const lastEdited = useRef('uzs');                      // oxirgi yozilgan: 'uzs' yoki 'usd'
+  const kursDaraja = useRef(0);                           // 3 Kapitalbank, 2 MB (server), 1 MB (brauzer)
+  const lastEdited = useRef('uzs');                       // oxirgi yozilgan: 'uzs' yoki 'usd'
 
   useEffect(() => {
     setForm(prev => ({ ...prev, tartibraqam: newNumber() }));
-    const bugungi = qoldaOqish(shortDate);          // bugun qo'lda kiritilgan kurs bo'lsa
-    if (bugungi) { setQoldaKurs(bugungi); setKursTuri('manual'); }
+    setQoldaKurs(qoldaOqish(shortDate));             // bugun qo'lda kiritilgan kurs bo'lsa
     fetchKurs(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchKurs = async (yangi) => {
-    setKursHolat('loading');
-    try {
-      const { data } = await axios.get(`${API}/api/kurs${yangi ? '?yangi=1' : ''}`, { timeout: 30000 });
-      if (!data.ok) throw new Error(data.message);
-      setKursData(data);
+  // yuqoriroq darajadagi manba kelsa — o'shani qo'yadi
+  const kursQoy = (daraja, qiymat) => {
+    if (daraja > kursDaraja.current) {
+      kursDaraja.current = daraja;
+      setAutoKurs(qiymat);
       setKursHolat('ok');
-      // tanlangan kurs mavjud bo'lmasa — eng yaxshi mavjudiga o'tadi
-      const bor = t => (t === 'sell' || t === 'buy' ? !!data.kapitalbank : t === 'cb' ? !!data.cb : t === 'xalqaro' ? !!data.xalqaro : true);
-      setKursTuri(t => (t === 'manual' || bor(t) ? t : data.kapitalbank ? 'sell' : data.cb ? 'cb' : 'xalqaro'));
-    } catch (e) {
-      setKursHolat('error');
-      setKursTuri(t => (t === 'manual' ? t : kursData ? t : 'manual'));
     }
   };
 
-  const kursQiymat = type => {
-    if (!kursData) return 0;
-    if (type === 'sell') return kursData.kapitalbank?.sell || 0;
-    if (type === 'buy') return kursData.kapitalbank?.buy || 0;
-    if (type === 'cb') return kursData.cb || 0;
-    if (type === 'xalqaro') return kursData.xalqaro || 0;
-    return 0;
+  const fetchKurs = async (yangi) => {
+    kursDaraja.current = 0;
+    setAutoKurs(null);
+    setKursHolat('loading');
+    await Promise.all([
+      axios.get(`${API}/api/kurs${yangi ? '?yangi=1' : ''}`, { timeout: 30000 })
+        .then(({ data }) => {
+          if (kursTogri(data?.kapitalbank?.sell)) {
+            kursQoy(3, { rate: data.kapitalbank.sell, manba: 'Kapitalbank (sotish)', sana: shortDate });
+          } else if (kursTogri(data?.cb)) {
+            kursQoy(2, { rate: data.cb, manba: 'Markaziy bank', sana: data.cbSana || shortDate });
+          }
+        })
+        .catch(() => {}),
+      cbuBrauzerdan().then(c => {
+        if (c) kursQoy(1, { rate: c.rate, manba: 'Markaziy bank', sana: c.sana || shortDate });
+      }),
+    ]);
+    if (!kursDaraja.current) setKursHolat('error');
   };
 
-  const rate = kursTuri === 'manual' ? parseDec(qoldaKurs) : kursQiymat(kursTuri);
-  const kursSana =
-    kursTuri === 'cb' ? (kursData?.cbSana || shortDate)
-    : kursTuri === 'xalqaro' ? (kursData?.xalqaroSana || shortDate)
-    : shortDate;
-  const kursManba = KURS_NOMI[kursTuri];
+  const handleQoldaKurs = e => {
+    const v = cleanDecInput(e.target.value);
+    setQoldaKurs(v);
+    qoldaYozish(shortDate, v);
+  };
+
+  const rate = autoKurs ? autoKurs.rate : parseDec(qoldaKurs);
+  const kursManba = autoKurs ? autoKurs.manba : "Qo'lda kiritilgan";
+  const kursSana = autoKurs ? autoKurs.sana : shortDate;
 
   // kurs o'zgarsa — oxirgi yozilgan qiymatdan qayta hisoblash
   useEffect(() => {
@@ -247,10 +274,15 @@ function Kvitansiya() {
       setErrorMsg("Summani kiriting.");
       return;
     }
+    if (!kursTogri(rate)) {
+      setErrorMsg("Dollar kursi yo'q — pastdagi «Dollar kursi» bo'limida kursni kiriting.");
+      return;
+    }
     setLoading(true);
     try {
       const res = await axios.post(`${API}/api/userKvitansiya/register`, {
         ...form,
+        kvitansiyakod: ofis ? form.kvitansiyakod : '',   // Chek ID faqat "Ofis uchun" belgilanganda
         summa: digits(form.summa),
         qoshimchatolov: digits(form.qoshimchatolov) || '0',
         amountroom: form.amountroom || '0',
@@ -286,11 +318,13 @@ function Kvitansiya() {
   const chekId = form.kvitansiyakod || '—';
   const summaPrint = form.summa ? `***${form.summa},00` : '***0,00';
   const dollarPrint = form.dollar ? `$ ${form.dollar}` : '$ 0.00';
-  const micr = `‖${form.tartibraqam}‖  :${shortDate.replace(/\./g, '')}:  ${form.kvitansiyakod || '0000000000'}‖`;
+  const micr = ofis
+    ? `‖${form.tartibraqam}‖  :${shortDate.replace(/\./g, '')}:  ${form.kvitansiyakod || '0000000000'}‖`
+    : `‖${form.tartibraqam}‖  :${shortDate.replace(/\./g, '')}:‖`;
   const qrText = [
     'RISOLA TRAVEL LUX MCHJ',
     `Kvitansiya No ${form.tartibraqam}`,
-    `Chek ID: ${form.kvitansiyakod}`,
+    ...(ofis ? [`Chek ID: ${form.kvitansiyakod}`] : []),
     `Sana: ${shortDate} ${timeNow}`,
     `Tolovchi: ${form.fullname}`,
     `Summa: ${digits(form.summa) || 0} UZS`,
@@ -319,10 +353,12 @@ function Kvitansiya() {
                 <div className="kv-mono">{shortDate}</div>
               </div>
 
-              <div className="kv-talon-id">
-                <span className="kv-lbl">Chek ID</span>
-                <b className="kv-mono">{chekId}</b>
-              </div>
+              {ofis && (
+                <div className="kv-talon-id">
+                  <span className="kv-lbl">Chek ID</span>
+                  <b className="kv-mono">{chekId}</b>
+                </div>
+              )}
 
               <div className="kv-tf"><span className="kv-lbl">Kimdan qabul qilindi</span><div className="kv-tv">{form.fullname || ' '}</div></div>
               <div className="kv-tf"><span className="kv-lbl">Asos (to'lov maqsadi)</span><div className="kv-tv">Umra xizmati</div></div>
@@ -365,18 +401,21 @@ function Kvitansiya() {
                       <span>№</span>
                       <b className="kv-mono">{form.tartibraqam}</b>
                     </div>
-                    <label className="kv-chekid">
-                      <span>CHEK ID</span>
-                      <input
-                        name="kvitansiyakod"
-                        value={form.kvitansiyakod}
-                        onChange={handleChange}
-                        placeholder="Kiriting"
-                        maxLength={24}
-                        autoComplete="off"
-                        required
-                      />
-                    </label>
+                    {ofis && (
+                      <label className="kv-chekid">
+                        <span>CHEK ID</span>
+                        <input
+                          name="kvitansiyakod"
+                          value={form.kvitansiyakod}
+                          onChange={handleChange}
+                          placeholder="Kiriting"
+                          maxLength={24}
+                          autoComplete="off"
+                          autoFocus
+                          required
+                        />
+                      </label>
+                    )}
                   </div>
                 </div>
               </header>
@@ -514,54 +553,52 @@ function Kvitansiya() {
               <b>Dollar kursi</b>
               <span className={`kv-kurs-status is-${kursHolat}`}>
                 {kursHolat === 'loading' && 'Yuklanmoqda…'}
-                {kursHolat === 'ok' && `${kursData?.manba} · ${new Date(kursData?.olingan).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}${kursData?.eskirgan ? ' · oxirgi saqlangan' : ''}`}
-                {kursHolat === 'error' && "Kurs olinmadi — qo'lda kiriting"}
+                {kursHolat === 'ok' && `${autoKurs?.manba} · ${autoKurs?.sana}`}
+                {kursHolat === 'error' && 'Avtomatik olinmadi'}
               </span>
               <button type="button" className="kv-kurs-refresh" onClick={() => fetchKurs(true)}>↻ Yangilash</button>
             </div>
 
-            <div className="kv-kurs-opts">
-              {['sell', 'buy', 'cb', 'xalqaro'].map(t => {
-                const v = kursQiymat(t);
-                return (
-                  <label key={t} className={`kv-opt ${kursTuri === t ? 'is-active' : ''} ${!v ? 'is-off' : ''}`}>
-                    <input type="radio" name="kursTuri" value={t} checked={kursTuri === t} disabled={!v} onChange={() => { setKursTuri(t); qoldaYozish('', ''); }} />
-                    <span>{KURS_NOMI[t]}</span>
-                    <b>{v ? fmtDec(v) : '—'}</b>
-                  </label>
-                );
-              })}
-              <label className={`kv-opt ${kursTuri === 'manual' ? 'is-active' : ''}`}>
-                <input type="radio" name="kursTuri" value="manual" checked={kursTuri === 'manual'} onChange={() => { setQoldaKurs(rate ? fmtDec(rate) : ''); setKursTuri('manual'); }} />
-                <span>Qo'lda</span>
+            {kursHolat === 'error' ? (
+              <label className={`kv-kurs-box ${kursTogri(rate) ? 'is-ok' : 'is-empty'}`}>
+                <span>1 USD =</span>
                 <input
-                  className="kv-opt-input"
-                  value={kursTuri === 'manual' ? qoldaKurs : ''}
-                  onChange={e => {
-                    const v = cleanDecInput(e.target.value);
-                    setKursTuri('manual');
-                    setQoldaKurs(v);
-                    qoldaYozish(shortDate, v);
-                  }}
+                  name="qoldaKurs"
+                  value={qoldaKurs}
+                  onChange={handleQoldaKurs}
                   placeholder="12 100.00"
                   inputMode="decimal"
+                  autoComplete="off"
                 />
+                <span>so'm</span>
+                <em>{kursTogri(rate) ? "✓ bugun uchun saqlandi" : "Kursni qo'lda kiriting"}</em>
               </label>
-            </div>
-            {kursHolat !== 'loading' && !kursData?.kapitalbank && (
-              <p className="kv-kurs-warn">
-                Kapitalbank sayti kursni serverga bermayapti. Bank kursini Kapitalbank ilovasidan ko'rib
-                «Qo'lda» katagiga yozsangiz, shu kompyuterda bugun kun bo'yi eslab qolinadi.
-              </p>
+            ) : (
+              <div className="kv-kurs-value">
+                1 USD = <b>{kursHolat === 'ok' ? fmtDec(rate) : '…'}</b> so'm
+              </div>
             )}
+
             <p className="kv-kurs-hint">
-              So'mda summa yozsangiz — dollari, dollar yozsangiz — so'mi avtomatik hisoblanadi.
-              {kursData?.xalqaro && <> Xalqaro kurs manbasi: <a href="https://www.exchangerate-api.com" target="_blank" rel="noreferrer">ExchangeRate-API</a>.</>}
+              Avval Kapitalbank sotish kursi olinadi, u bo'lmasa — Markaziy bank kursi. Ikkalasi ham olinmasa,
+              kursni qo'lda kiriting (shu kompyuterda bugun kun bo'yi eslab qolinadi). So'mda summa yozsangiz —
+              dollari, dollar yozsangiz — so'mi avtomatik hisoblanadi.
             </p>
           </div>
         </fieldset>
 
         <div className="kv-actions no-print">
+          {/* Ofis uchun: belgilansa — Chek ID kiritiladi va chekda chiqadi */}
+          <label className={`kv-ofis ${ofis ? 'is-on' : ''} ${saved ? 'is-locked' : ''}`}>
+            <input
+              type="checkbox"
+              checked={ofis}
+              disabled={saved}
+              onChange={e => setOfis(e.target.checked)}
+            />
+            <span className="kv-ofis-dot" aria-hidden="true" />
+            Ofis uchun
+          </label>
           {!saved && (
             <button type="submit" disabled={loading} className="btn-save">
               {loading ? 'Saqlanmoqda…' : 'Saqlash'}
